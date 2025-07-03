@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Account Verified</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f9f9f9">
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #f9f9f9; padding: 30px 0"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="500"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+              padding: 40px;
+            "
+          >
+            <!-- Brand -->
+            <tr>
+              <td align="center" style="padding-bottom: 20px">
+                <table>
+                  <tr>
+                    <td
+                      style="
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #ff5722;
+                        font-family:
+                          'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                      "
+                    >
+                      Fast Fuud
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Message -->
+            <tr>
+              <td align="center" style="padding: 10px 0">
+                <table>
+                  <tr>
+                    <td
+                      style="
+                        font-size: 20px;
+                        color: #333333;
+                        font-family:
+                          'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        text-align: center;
+                        padding-bottom: 10px;
+                      "
+                    >
+                      Account Successfully Verified
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="
+                        font-size: 14px;
+                        color: #555555;
+                        font-family:
+                          'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        text-align: center;
+                        padding-bottom: 20px;
+                      "
+                    >
+                      Hi <%= name %>, your email has been successfully verified.
+                      You can now log in to your Fast Fuud account and start
+                      exploring.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" style="padding: 12px 0">
+                      <a
+                        href="<%= loginUrl %>"
+                        style="
+                          display: inline-block;
+                          padding: 12px 24px;
+                          background-color: #ff5722;
+                          color: #ffffff;
+                          font-weight: bold;
+                          text-decoration: none;
+                          border-radius: 6px;
+                          font-family:
+                            'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        "
+                      >
+                        Log In
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Footer Note -->
+            <tr>
+              <td align="center" style="padding-top: 30px">
+                <table>
+                  <tr>
+                    <td
+                      style="
+                        font-size: 14px;
+                        color: #777777;
+                        font-family:
+                          'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        text-align: center;
+                      "
+                    >
+                      If you didn’t create this account, please contact our
+                      support team immediately.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Copyright -->
+            <tr>
+              <td align="center" style="padding-top: 40px">
+                <table>
+                  <tr>
+                    <td
+                      style="
+                        font-size: 12px;
+                        color: #bbbbbb;
+                        font-family:
+                          'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        text-align: center;
+                      "
+                    >
+                      &copy; <%= year %> Fast Fuud. All rights reserved.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
