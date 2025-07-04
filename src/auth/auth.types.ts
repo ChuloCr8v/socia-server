@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsEmail, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
 
 
@@ -6,6 +6,13 @@ export enum OtpTypes {
     EMAIL_VERIFICATION
 }
 
+export class LoginDto {
+    @IsEmail()
+    email: string
+
+    @IsString()
+    password: string
+}
 export class BankInformationDto {
     @IsString()
     bankName: string

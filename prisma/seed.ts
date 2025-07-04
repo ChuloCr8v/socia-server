@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma'
+import { PrismaClient, Role } from '@prisma/client';
 import { hash } from 'argon2'
 
 const prisma = new PrismaClient()
@@ -8,6 +8,8 @@ async function main() {
         data: {
             email: "cleverdeveloper360@gmail.com",
             name: "Nkematu Bonaventure",
+            role: Role.ADMIN,
+            isVerified: true,
             auth: {
                 create: {
                     passHash: await hash("Password123?")

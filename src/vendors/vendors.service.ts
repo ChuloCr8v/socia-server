@@ -6,7 +6,7 @@ import { EmailService } from 'src/email/email.service';
 import { OtpService } from 'src/otp/otp.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { bad } from 'src/utils/error.utils';
-import { generateOtp, isEmailTaken, isPhoneTaken } from 'src/utils/helpers.utils';
+import { generateOtp, generateShortId, isEmailTaken, isPhoneTaken } from 'src/utils/helpers.utils';
 
 @Injectable()
 export class VendorsService {
@@ -39,6 +39,7 @@ export class VendorsService {
                 data: {
                     email,
                     name: name || businessName,
+
                     auth: {
                         create: {
                             passHash,
@@ -49,6 +50,8 @@ export class VendorsService {
                             name: name || businessName,
                             businessName,
                             phone,
+                            email,
+                            vendorId: `VEN${generateShortId(4)}`,
                             ...rest,
                         },
                     },
