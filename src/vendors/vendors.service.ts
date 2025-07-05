@@ -38,6 +38,7 @@ export class VendorsService {
             this.prisma.user.create({
                 data: {
                     email,
+                    isVerified: dto.isVerified ?? false,
                     name: name || businessName,
 
                     auth: {

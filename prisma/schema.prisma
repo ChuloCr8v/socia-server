@@ -108,6 +108,7 @@ model Vendor {
   closingTime    String?
   user           User?             @relation(fields: [userId], references: [id])
   userId         String            @unique @db.Uuid
+  status         UserStatus?       @default(ACTIVE)
 
   orders    Orders?
   createdAt DateTime @default(now())

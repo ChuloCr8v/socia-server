@@ -2,6 +2,16 @@ import { PrismaClient, Role } from '@prisma/client';
 import { hash } from 'argon2'
 
 const prisma = new PrismaClient()
+const data = [
+    {
+        email: "chrisejike16gmail.com",
+        name: "Ejiekme Agunwa"
+    },
+    {
+        email: "johnpaulnduka400gmail.com",
+        name: "Johnpaul Nduka"
+    },
+]
 
 async function main() {
     await prisma.user.create({

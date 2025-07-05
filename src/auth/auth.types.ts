@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
 
 
@@ -40,6 +40,10 @@ export class CreateVendorDto {
 
     @IsString()
     phone: string
+
+    @IsBoolean()
+    @IsOptional()
+    isVerified?: boolean
 
 
 }
