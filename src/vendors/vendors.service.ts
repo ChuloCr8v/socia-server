@@ -80,15 +80,17 @@ export class VendorsService {
         return vendor;
     }
 
-    async verifyVendor(userId: string, otp: string) {
-        await this.otp.verifyOtp(userId)
+    async verifyVendor(email: string, otp: string) {
+        const user = await this.prisma.user.findFirst({ where: { email: email } })
+        console.log(user)
+        if (!user) return bad("Account does not exist!");
 
-        const user = await this.prisma.user.findUnique({ where: { id: userId } })
+        await this.otp.verifyOtp(user.id, otp)
 
-        const { email, name } = user
+        const { name } = user
 
         await this.prisma.user.update({
-            where: { id: userId },
+            where: { email: email },
             data: {
                 isVerified: true
             }

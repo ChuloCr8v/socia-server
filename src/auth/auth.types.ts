@@ -96,3 +96,11 @@ export class VendorDto extends CreateVendorDto {
     closingTime?: string
 
 }
+
+export class validateUserDto {
+    @IsEmail()
+    email: string
+
+    @IsString()
+    otp: string
+}

@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Get, Delete, Put, Param, UseGuards } from '@nestjs/common';
-import { CreateVendorDto } from 'src/auth/auth.types';
+import { CreateVendorDto, validateUserDto } from 'src/auth/auth.types';
 import { VendorsService } from './vendors.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
@@ -42,8 +42,9 @@ export class VendorsController {
         return { message: 'Vendor deleted successfully' };
     }
 
-    @Put("verify/:userId")
-    async verifyVendor(@Param("userId") userId: string, @Body() otp: string) {
-        return this.vendor.verifyVendor(userId, otp)
+    @Put("verify")
+    async verifyVendor(@Body() dto: validateUserDto) {
+        const { email, otp } = dto
+        return this.vendor.verifyVendor(email, otp)
     }
 }
