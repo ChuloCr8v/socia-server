@@ -1,9 +1,12 @@
 // auth.decorator.ts
-import { applyDecorators, UseGuards } from '@nestjs/common';
+import { applyDecorators, createParamDecorator, ExecutionContext, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 import { Role } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import { type Request } from 'express';
+
 
 export const Auth = (role?: Role) => {
     if (role) {
@@ -15,3 +18,31 @@ export const Auth = (role?: Role) => {
 
     return applyDecorators(UseGuards(AuthGuard('jwt')));
 };
+
+
+export function getAuthToken(req: Request) {
+    const auth = req.headers.authorization;
+    const bearer = auth && /^Bearer (.+)$/.exec(auth);
+    if (bearer) return bearer[1];
+
+    const header = req.get('X-Auth-Token');
+    if (header) return header;
+
+    return null;
+}
+
+export const AuthUser = createParamDecorator(
+    async (_: unknown, ctx: ExecutionContext) => {
+        const jwtService = new JwtService();
+        const token = getAuthToken(ctx.switchToHttp().getRequest());
+        if (!token) throw new UnauthorizedException();
+        try {
+            const payload = await jwtService.verifyAsync(token, {
+                secret: process.env.JWT_SECRET,
+            });
+            return payload;
+        } catch {
+            throw new UnauthorizedException();
+        }
+    },
+);

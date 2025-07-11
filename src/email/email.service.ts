@@ -37,7 +37,13 @@ export class EmailService {
 
         const html = ejs.render(template, { otp, name, year: new Date().getFullYear() });
 
-        return this.sendEmail(to, 'Your OTP Code', html);
+        console.log("Otp sending")
+
+        this.sendEmail(to, 'Your OTP Code', html);
+
+        console.log("otp sent")
+
+        return
     }
 
     async sendAccountVerifiedEmail(to: string, name: string) {

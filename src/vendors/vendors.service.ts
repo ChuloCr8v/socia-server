@@ -50,7 +50,7 @@ export class VendorsService {
                         create: {
                             name: name || businessName,
                             businessName,
-                            phone,
+                            phone: phone || "",
                             email,
                             vendorId: `VEN${generateShortId(4)}`,
                             ...rest,

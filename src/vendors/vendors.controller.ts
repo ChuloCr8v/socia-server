@@ -2,7 +2,6 @@ import { Body, Controller, Post, Get, Delete, Put, Param, UseGuards } from '@nes
 import { CreateVendorDto } from 'src/auth/auth.types';
 import { VendorsService } from './vendors.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { AuthGuard } from '@nestjs/passport';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('vendors')
@@ -18,7 +17,7 @@ export class VendorsController {
         return await this.vendor.createVendor(vendorDto)
     }
 
-    @Auth("ADMIN")
+    // @Auth("ADMIN")
     @Get()
     async listAllVendors() {
         return this.vendor.listVendors()

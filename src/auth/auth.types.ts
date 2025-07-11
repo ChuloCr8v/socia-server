@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsEmail, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsOptional, isString, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
 
 
@@ -11,8 +11,26 @@ export class LoginDto {
     email: string
 
     @IsString()
-    password: string
+    password?: string
+
+    @IsOptional()
+    @IsString()
+    name?: string
+
+    @IsOptional()
+    @IsString()
+    googleId?: string
 }
+
+
+export type AuthPayload = {
+    sub: string;
+    otpId?: string;
+    isOtp?: boolean;
+};
+
+export type IAuthUser = AuthPayload;
+
 export class BankInformationDto {
     @IsString()
     bankName: string
@@ -30,7 +48,7 @@ export class CreateVendorDto {
     name?: string
 
     @IsString()
-    businessName: string
+    businessName?: string
 
     @IsString()
     email: string
@@ -39,7 +57,7 @@ export class CreateVendorDto {
     password: string
 
     @IsString()
-    phone: string
+    phone?: string
 
     @IsBoolean()
     @IsOptional()
