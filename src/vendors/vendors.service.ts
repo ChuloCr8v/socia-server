@@ -32,57 +32,55 @@ export class VendorsService {
         if (await isPhoneTaken(phone)) bad('Phone number already exists');
 
         const passHash = await hash(password);
-        const otp = generateOtp();
 
-        const [vendor] = await this.prisma.$transaction([
-            this.prisma.user.create({
-                data: {
-                    email,
-                    isVerified: dto.isVerified ?? false,
-                    name: name || businessName,
+        const { otp, hashedOtp } = await generateOtp();
 
-                    auth: {
-                        create: {
-                            passHash,
-                        },
-                    },
-                    vendor: {
-                        create: {
-                            name: name || businessName,
-                            businessName,
-                            phone: phone || "",
-                            email,
-                            vendorId: `VEN${generateShortId(4)}`,
-                            ...rest,
-                        },
+        const vendorUser = await this.prisma.user.create({
+            data: {
+                email,
+                isVerified: dto.isVerified ?? false,
+                name: name || businessName,
+                auth: {
+                    create: {
+                        passHash,
                     },
                 },
-            }),
-
-            this.prisma.otp.create({
-                data: {
-                    otp: await hash(otp.toString()),
-                    expiresAt: new Date(Date.now() + 30 * 60 * 1000),
-                    type: "EMAIL_VERIFICATION",
-                    user: {
-                        connect: {
-                            email,
-                        },
+                vendor: {
+                    create: {
+                        name: name || businessName,
+                        businessName,
+                        phone: phone || '',
+                        email,
+                        vendorId: `VEN${generateShortId(4)}`,
+                        ...rest,
                     },
                 },
-            }),
-        ]);
+            },
+        });
 
-        await this.emailQueue.enqueueOtpEmail(email, otp.toString(), name || businessName);
+        await this.prisma.otp.create({
+            data: {
+                otp: hashedOtp,
+                expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+                type: 'EMAIL_VERIFICATION',
+                user: {
+                    connect: {
+                        email,
+                    },
+                },
+            },
+        });
 
-        // await this.email.sendOtpEmail(email, otp.toString(), name || businessName);
+        // Send OTP email
+        await this.emailQueue.enqueueOtpEmail(email, otp, name || businessName);
 
-        return vendor;
+        return vendorUser;
     }
 
+
     async verifyVendor(email: string, otp: string) {
-        const user = await this.prisma.user.findFirst({ where: { email: email } })
-        console.log(user)
+        const user = await this.prisma.user.findUnique({ where: { email: email } })
+        console.log(otp, user.id)
         if (!user) return bad("Account does not exist!");
 
         await this.otp.verifyOtp(user.id, otp)

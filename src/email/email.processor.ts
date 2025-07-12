@@ -2,6 +2,7 @@ import { Worker } from 'bullmq';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EmailService } from './email.service';
 import { ConfigService } from '@nestjs/config';
+import { EmailQueues } from './email.queue';
 
 @Injectable()
 export class EmailProcessor implements OnModuleInit {
@@ -17,12 +18,19 @@ export class EmailProcessor implements OnModuleInit {
                 const { name, to, otp } = job.data;
 
                 switch (job.name) {
-                    case 'send-otp':
+                    case EmailQueues.SEND_OTP:
                         await this.emailService.sendOtpEmail(to, otp, name);
                         break;
 
-                    case 'verify-account':
+                    case EmailQueues.VERIFY_ACCOUNT:
                         await this.emailService.sendAccountVerifiedEmail(to, name);
+                        break;
+                    case EmailQueues.RESET_PASSWORD:
+
+                        await this.emailService.sendResetPasswordOtp(to, otp, name);
+                        break;
+                    case EmailQueues.RESET_PASSWORD_SUCCESSFUL:
+                        await this.emailService.sendResetPasswordSuccessful(to, name);
                         break;
 
                     default:

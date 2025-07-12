@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
-import * as argon from 'argon2';
 import { bad } from 'src/utils/error.utils';
 import { IAuthUser, LoginDto } from './auth.types';
-
+import { generateOtp } from 'src/utils/helpers.utils';
+import { EmailQueue } from 'src/email/email.queue';
+import { OtpService } from 'src/otp/otp.service';
+import { hash, verify as verifyHash } from 'argon2';
 import * as jwt from 'jsonwebtoken';
-
 import jwksClient from 'jwks-rsa';
 import { User } from 'generated/prisma';
 
@@ -16,13 +17,13 @@ const client = jwksClient({
     jwksUri: 'https://appleid.apple.com/auth/keys',
 });
 
-
 @Injectable()
 export class AuthService {
     constructor(
         private prisma: PrismaService,
         private jwt: JwtService,
-
+        private emailQueue: EmailQueue,
+        private otp: OtpService,
     ) { }
 
     async validateUser(email: string, password: string) {
@@ -31,7 +32,7 @@ export class AuthService {
             include: { auth: true },
         });
 
-        if (!user || !(await argon.verify(user.auth?.passHash || '', password))) {
+        if (!user || !(await verifyHash(user.auth?.passHash || '', password))) {
             bad('Invalid credentials');
         }
 
@@ -46,23 +47,18 @@ export class AuthService {
         };
     }
 
-
     async googleLogin(googleProfile: LoginDto) {
-
-        const { googleId, email, name } = googleProfile
+        const { googleId, email, name } = googleProfile;
 
         const existingAuth = await this.prisma.auth.findFirst({
             where: {
-                provider: "GOOGLE",
-                providerId: googleId
-
+                provider: 'GOOGLE',
+                providerId: googleId,
             },
-            select: {
-                user: true
-            }
-        })
+            select: { user: true },
+        });
 
-        let user = existingAuth.user
+        let user = existingAuth?.user;
 
         if (!user) {
             user = await this.prisma.user.create({
@@ -84,7 +80,7 @@ export class AuthService {
         return {
             message: 'Logged in with Google',
             user,
-            token: token,
+            token,
         };
     }
 
@@ -98,15 +94,10 @@ export class AuthService {
         const { header } = decoded;
         const publicKey = await this.getAppleSigningKey(header.kid);
 
-        try {
-            const payload = jwt.verify(idToken, publicKey, {
-                algorithms: ['RS256'],
-                issuer: APPLE_ISSUER,
-            });
-            return payload;
-        } catch (err) {
-            throw err;
-        }
+        return jwt.verify(idToken, publicKey, {
+            algorithms: ['RS256'],
+            issuer: APPLE_ISSUER,
+        });
     }
 
     private getAppleSigningKey(kid: string): Promise<string> {
@@ -121,7 +112,6 @@ export class AuthService {
 
     async appleSignin(identityToken: string) {
         const payload = await this.verifyAppleIdentityToken(identityToken);
-
         const appleId = payload.sub;
         const email = payload.email ?? null;
 
@@ -131,10 +121,9 @@ export class AuthService {
                 providerId: appleId,
             },
             include: {
-                user: true
-            }
+                user: true,
+            },
         });
-
 
         let user: User;
 
@@ -152,19 +141,18 @@ export class AuthService {
                 },
             });
         } else {
-            user = existingAuth.user
+            user = existingAuth.user;
         }
 
         const token = this.jwt.sign({ userId: user.id, email: user.email });
 
-
         return {
             message: 'Logged in with Apple',
+            firstLogin: !existingAuth,
             user,
             token,
         };
     }
-
 
     async authUser(user: IAuthUser) {
         return this.prisma.user.findUnique({
@@ -172,6 +160,75 @@ export class AuthService {
         });
     }
 
+    async forgotPassword(email: string) {
+        try {
+            const user = await this.prisma.user.findUnique({ where: { email } });
+            if (!user) bad('Account not found');
 
+            const { otp, hashedOtp } = await generateOtp();
+
+            await this.prisma.otp.create({
+                data: {
+                    otp: hashedOtp,
+                    expiresAt: new Date(Date.now() + 30 * 60 * 1000), // 30 mins
+                    type: 'RESET_PASSWORD',
+                    user: {
+                        connect: { email },
+                    },
+                },
+            });
+
+            await this.emailQueue.enqueueResetPasswordOtp(email, otp, user.name);
+
+            return { message: 'OTP sent', data: user };
+        } catch (error: any) {
+            console.log('error issue:', error);
+            return error.message || 'An unexpected error occurred.';
+        }
+    }
+
+    async resetPassword(dto: LoginDto) {
+        try {
+            const { password, email } = dto;
+
+            const user = await this.prisma.user.findUnique({
+                where: { email },
+                include: { auth: true },
+            });
+
+            if (!user) bad('Account not found');
+
+            const isOldPassword = await verifyHash(user.auth.passHash, password);
+            if (isOldPassword) bad("You can't use old password!");
+
+            await this.prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    auth: {
+                        update: {
+                            passHash: await hash(password),
+                        },
+                    },
+                },
+            });
+
+            await this.emailQueue.enqueueResetPasswordSuccessful(email, user.name);
+            return { message: 'Password reset successful' };
+        } catch (error: any) {
+            console.log(error);
+            return error.message || 'An unexpected error occurred.';
+        }
+    }
+
+    async verifyOtp(email: string, otp: string) {
+        const user = await this.prisma.user.findFirst({ where: { email } });
+        if (!user) return bad('Account does not exist!');
+
+        await this.otp.verifyOtp(user.id, otp);
+
+        return {
+            message: 'OTP verified successfully',
+            data: user,
+        };
+    }
 }
-

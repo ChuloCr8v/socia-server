@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { hash } from "argon2";
 
 const prisma = new PrismaClient()
 
@@ -12,8 +13,11 @@ export async function isPhoneTaken(phone: string) {
     return !!exists;
 }
 
-export function generateOtp() {
-    return Math.floor(100000 + Math.random() * 900000)
+export async function generateOtp() {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    const hashedOtp = await hash(otp)
+
+    return { otp, hashedOtp }
 }
 
 export function generateShortId(length: number = 10) {

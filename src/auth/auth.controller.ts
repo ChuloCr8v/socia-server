@@ -1,11 +1,14 @@
-import { Body, Controller, Post, Req, UseGuards, Get } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards, Get, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { IAuthUser, LoginDto } from './auth.types';
+import { IAuthUser, LoginDto, validateUserDto } from './auth.types';
 import { AuthUser } from './decorators/auth.decorator';
+import { OtpService } from 'src/otp/otp.service';
 @Controller('auth')
 export class AuthController {
-    constructor(private auth: AuthService) { }
+    constructor(private auth: AuthService,
+        private otp: OtpService
+    ) { }
 
     // admin login
     // @Auth(Role.ADMIN)
@@ -32,8 +35,21 @@ export class AuthController {
         return this.auth.authUser(user)
     }
 
+    @Post("forgot-password")
+    async forgotPassword(@Body() dto: { email: string }) {
+        const { email } = dto
+        return this.auth.forgotPassword(email)
+    }
 
+    @Put("reset-password")
+    async resetPassword(@Body() dto: LoginDto) {
+        await this.auth.resetPassword(dto)
+    }
 
-
+    @Put("verify-otp")
+    async verifyOTP(@Body() dto: validateUserDto) {
+        const { email, otp } = dto
+        return await this.auth.verifyOtp(email, otp)
+    }
 
 }

@@ -11,6 +11,8 @@ export class EmailService {
     constructor(private config: ConfigService) { }
 
     async sendEmail(to: string, subject: string, html: string) {
+
+
         const apiKey = this.config.get<string>('RESEND_API_KEY');
         const from = this.config.get<string>('RESEND_FROM_EMAIL');
         const emailUrl = this.config.get<string>('RESEND_EMAIL_BASE_URL');
@@ -37,11 +39,9 @@ export class EmailService {
 
         const html = ejs.render(template, { otp, name, year: new Date().getFullYear() });
 
-        console.log("Otp sending")
 
         this.sendEmail(to, 'Your OTP Code', html);
 
-        console.log("otp sent")
 
         return
     }
@@ -53,6 +53,30 @@ export class EmailService {
 
         const html = ejs.render(template, { name, year: new Date().getFullYear() });
 
-        return this.sendEmail(to, 'Your OTP Code', html);
+        await this.sendEmail(to, 'Account Verified Successfully', html);
+
+        return
+    }
+
+    async sendResetPasswordOtp(to: string, otp: string, name: string) {
+
+        const filePath = join(__dirname, 'templates', 'reset-password.ejs');
+
+        const template = await readFile(filePath, 'utf8');
+
+        const html = ejs.render(template, { otp, name, year: new Date().getFullYear() });
+
+        await this.sendEmail(to, 'Reset Account Password', html);
+        return
+    }
+
+    async sendResetPasswordSuccessful(to: string, name: string) {
+        const filePath = join(__dirname, 'templates', 'reset-password-successful.ejs');
+        const template = await readFile(filePath, 'utf8');
+
+
+        const html = ejs.render(template, { name, year: new Date().getFullYear() });
+
+        return this.sendEmail(to, 'Reset Account Password', html);
     }
 }
