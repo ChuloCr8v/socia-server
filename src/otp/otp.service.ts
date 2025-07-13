@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { isAfter } from 'date-fns';
 import * as argon from 'argon2';
-import { PrismaService } from 'src/prisma/prisma.service.js';
-import { bad } from 'src/utils/error.utils.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { bad } from '../utils/error.utils.js';
 
 @Injectable()
 export class OtpService {

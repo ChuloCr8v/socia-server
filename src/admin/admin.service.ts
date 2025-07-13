@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LoginDto } from 'src/auth/auth.types.js';
+import { LoginDto } from '../auth/auth.types.js';
 
 @Injectable()
 export class AdminService {

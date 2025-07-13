@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Put, Req, UseGuards, Get, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { OtpService } from 'src/otp/otp.service.js';
+import { OtpService } from '../otp/otp.service.js';
 import { AuthService } from './auth.service.js';
 import { LoginDto, IAuthUser, validateUserDto } from './auth.types.js';
 import { Auth, AuthUser } from './decorators/auth.decorator.js';
