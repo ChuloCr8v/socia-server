@@ -13,7 +13,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -22,7 +22,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:seed": "ts-node --transpile-only prisma/seed.ts",
     "copy:templates": "ts-node scripts/copy-templates.js",
-    "postbuild": "npm run copy:templates"
+    "postbuild": "npm run copy:templates",
+    "postinstall": "npm run build",
+    "render-build": "npm install && npm run build"
   },
   "dependencies": {
     "@nestjs/bullmq": "^11.0.2",
