@@ -9,8 +9,7 @@ import { OtpService } from 'src/otp/otp.service';
 import { hash, verify as verifyHash } from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
-import { User } from 'generated/prisma';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
 const APPLE_ISSUER = 'https://appleid.apple.com';
 
