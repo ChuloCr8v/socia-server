@@ -9,9 +9,18 @@ import { OtpModule } from './otp/otp.module';
 import { AdminModule } from './admin/admin.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/guards/roles.guard';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [AuthModule, PrismaModule, VendorsModule, EmailModule, OtpModule, AdminModule],
+  imports: [AuthModule, PrismaModule, VendorsModule, EmailModule, OtpModule, AdminModule, JwtModule.registerAsync({
+    imports: [ConfigModule],
+    useFactory: async (config: ConfigService) => ({
+      secret: config.get<string>('JWT_SECRET', 'supersecretkey'),
+      signOptions: { expiresIn: '1d' },
+    }),
+    inject: [ConfigService],
+  })],
   controllers: [AppController],
   providers: [AppService,
     // {

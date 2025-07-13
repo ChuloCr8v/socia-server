@@ -27,6 +27,7 @@ export type AuthPayload = {
     sub: string;
     otpId?: string;
     isOtp?: boolean;
+    userId?: string
 };
 
 export type IAuthUser = AuthPayload;

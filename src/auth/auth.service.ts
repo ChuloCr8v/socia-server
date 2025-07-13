@@ -10,6 +10,7 @@ import { hash, verify as verifyHash } from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { User } from 'generated/prisma';
+import { Role } from '@prisma/client';
 
 const APPLE_ISSUER = 'https://appleid.apple.com';
 
@@ -132,6 +133,7 @@ export class AuthService {
                 data: {
                     email,
                     name: '',
+                    isVerified: true,
                     auth: {
                         create: {
                             provider: 'APPLE',
@@ -144,19 +146,22 @@ export class AuthService {
             user = existingAuth.user;
         }
 
-        const token = this.jwt.sign({ userId: user.id, email: user.email });
+        const accessToken = this.jwt.sign({ userId: user.id, email: user.email });
 
         return {
             message: 'Logged in with Apple',
             firstLogin: !existingAuth,
             user,
-            token,
+            accessToken,
         };
     }
 
     async authUser(user: IAuthUser) {
         return this.prisma.user.findUnique({
-            where: { id: user.sub },
+            where: { id: user.sub || user.userId },
+            include: {
+                vendor: true
+            }
         });
     }
 
@@ -231,4 +236,17 @@ export class AuthService {
             data: user,
         };
     }
+
+
+
+    generateToken(user: { id: string; email: string; role: Role }) {
+        return this.jwt.sign({
+            sub: user.id,
+            email: user.email,
+            role: user.role,
+        });
+    }
+
+
+
 }

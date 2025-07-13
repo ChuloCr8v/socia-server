@@ -2,7 +2,7 @@ import { Body, Controller, Post, Put, Req, UseGuards, Get, Param } from '@nestjs
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { IAuthUser, LoginDto, validateUserDto } from './auth.types';
-import { AuthUser } from './decorators/auth.decorator';
+import { Auth, AuthUser } from './decorators/auth.decorator';
 import { OtpService } from 'src/otp/otp.service';
 @Controller('auth')
 export class AuthController {
@@ -31,6 +31,7 @@ export class AuthController {
     }
 
     @Get("auth-user")
+    @Auth()
     async getAuthUser(@AuthUser() user: IAuthUser) {
         return this.auth.authUser(user)
     }
