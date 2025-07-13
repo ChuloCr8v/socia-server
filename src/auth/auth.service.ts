@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { bad } from 'src/utils/error.utils';
-import { IAuthUser, LoginDto } from './auth.types';
-import { generateOtp } from 'src/utils/helpers.utils';
-import { EmailQueue } from 'src/email/email.queue';
-import { OtpService } from 'src/otp/otp.service';
 import { hash, verify as verifyHash } from 'argon2';
 import * as jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import { Role, User } from '@prisma/client';
+import { EmailQueue } from 'src/email/email.queue.js';
+import { OtpService } from 'src/otp/otp.service.js';
+import { PrismaService } from 'src/prisma/prisma.service.js';
+import { bad } from 'src/utils/error.utils.js';
+import { generateOtp } from 'src/utils/helpers.utils.js';
+import { LoginDto, IAuthUser } from './auth.types.js';
 
 const APPLE_ISSUER = 'https://appleid.apple.com';
 

@@ -1,9 +1,9 @@
 import { Body, Controller, Post, Put, Req, UseGuards, Get, Param } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { IAuthUser, LoginDto, validateUserDto } from './auth.types';
-import { Auth, AuthUser } from './decorators/auth.decorator';
-import { OtpService } from 'src/otp/otp.service';
+import { OtpService } from 'src/otp/otp.service.js';
+import { AuthService } from './auth.service.js';
+import { LoginDto, IAuthUser, validateUserDto } from './auth.types.js';
+import { Auth, AuthUser } from './decorators/auth.decorator.js';
 @Controller('auth')
 export class AuthController {
     constructor(private auth: AuthService,

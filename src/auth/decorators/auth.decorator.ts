@@ -1,11 +1,11 @@
 // auth.decorator.ts
 import { applyDecorators, createParamDecorator, ExecutionContext, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from './roles.decorator';
-import { RolesGuard } from '../guards/roles.guard';
 import { Role } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { type Request } from 'express';
+import { Roles } from './roles.decorator.js';
+import { RolesGuard } from '../guards/roles.guard.js';
 
 
 export const Auth = (role?: Role) => {

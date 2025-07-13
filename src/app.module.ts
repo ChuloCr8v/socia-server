@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { VendorsModule } from './vendors/vendors.module';
-import { EmailModule } from './email/email.module';
-import { OtpModule } from './otp/otp.module';
-import { AdminModule } from './admin/admin.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './auth/guards/roles.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminModule } from './admin/admin.module.js';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import { AuthModule } from './auth/auth.module.js';
+import { EmailModule } from './email/email.module.js';
+import { OtpModule } from './otp/otp.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { VendorsModule } from './vendors/vendors.module.js';
 
 @Module({
   imports: [AuthModule, PrismaModule, VendorsModule, EmailModule, OtpModule, AdminModule, JwtModule.registerAsync({

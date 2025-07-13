@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { hash } from 'argon2';
-import { AuthService } from 'src/auth/auth.service';
-import { CreateVendorDto } from 'src/auth/auth.types';
-import { EmailQueue } from 'src/email/email.queue';
-import { OtpService } from 'src/otp/otp.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { bad } from 'src/utils/error.utils';
-import { generateOtp, generateShortId, isEmailTaken, isPhoneTaken } from 'src/utils/helpers.utils';
-
+import { AuthService } from 'src/auth/auth.service.js';
+import { CreateVendorDto } from 'src/auth/auth.types.js';
+import { EmailQueue } from 'src/email/email.queue.js';
+import { OtpService } from 'src/otp/otp.service.js';
+import { PrismaService } from 'src/prisma/prisma.service.js';
+import { bad } from 'src/utils/error.utils.js';
+import { isEmailTaken, isPhoneTaken, generateOtp, generateShortId } from 'src/utils/helpers.utils.js';
 @Injectable()
 export class VendorsService {
     constructor(private prisma: PrismaService, private emailQueue: EmailQueue, private otp: OtpService, private auth: AuthService

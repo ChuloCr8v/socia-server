@@ -1,8 +1,7 @@
 import { Body, Controller, Post, Get, Delete, Put, Param, UseGuards } from '@nestjs/common';
-import { CreateVendorDto, validateUserDto } from 'src/auth/auth.types';
-import { VendorsService } from './vendors.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Auth } from 'src/auth/decorators/auth.decorator';
+import { CreateVendorDto, validateUserDto } from 'src/auth/auth.types.js';
+import { PrismaService } from 'src/prisma/prisma.service.js';
+import { VendorsService } from './vendors.service.js';
 
 @Controller('vendors')
 export class VendorsController {

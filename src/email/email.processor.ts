@@ -1,8 +1,8 @@
 import { Worker } from 'bullmq';
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { EmailService } from './email.service';
 import { ConfigService } from '@nestjs/config';
-import { EmailQueues } from './email.queue';
+import { EmailQueues } from './email.queue.js';
+import { EmailService } from './email.service.js';
 
 @Injectable()
 export class EmailProcessor implements OnModuleInit {

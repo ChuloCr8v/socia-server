@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { EmailService } from './email.service';
 import { ConfigModule } from '@nestjs/config';
-import { EmailQueue } from './email.queue';
-import { EmailProcessor } from './email.processor';
+import { EmailProcessor } from './email.processor.js';
+import { EmailQueue } from './email.queue.js';
+import { EmailService } from './email.service.js';
+
 
 @Module({
   imports: [ConfigModule],
