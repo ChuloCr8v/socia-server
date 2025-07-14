@@ -11,14 +11,18 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { VendorsModule } from './vendors/vendors.module.js';
 
 @Module({
-  imports: [AuthModule, PrismaModule, VendorsModule, EmailModule, OtpModule, AdminModule, JwtModule.registerAsync({
-    imports: [ConfigModule],
-    useFactory: async (config: ConfigService) => ({
-      secret: config.get<string>('JWT_SECRET', 'supersecretkey'),
-      signOptions: { expiresIn: '1d' },
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // makes config available in all modules
     }),
-    inject: [ConfigService],
-  })],
+    AuthModule, PrismaModule, VendorsModule, EmailModule, OtpModule, AdminModule, JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET', 'supersecretkey'),
+        signOptions: { expiresIn: '1d' },
+      }),
+      inject: [ConfigService],
+    })],
   controllers: [AppController],
   providers: [AppService,
     // {

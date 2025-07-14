@@ -182,6 +182,7 @@ export class AuthService {
                 },
             });
 
+
             await this.emailQueue.enqueueResetPasswordOtp(email, otp, user.name);
 
             return { message: 'OTP sent', data: user };

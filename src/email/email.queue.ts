@@ -31,7 +31,9 @@ export class EmailQueue {
     async enqueueResetPasswordOtp(to: string, otp: string,
         name: string) {
 
+
         await this.queue.add(EmailQueues.RESET_PASSWORD, { to, otp, name });
+
     }
 
     async enqueueResetPasswordSuccessful(to: string,

@@ -60,6 +60,8 @@ export class EmailService {
 
     async sendResetPasswordOtp(to: string, otp: string, name: string) {
 
+        console.log("email service:66", to, otp, name)
+
         const filePath = join(__dirname, 'templates', 'reset-password.ejs');
 
         const template = await readFile(filePath, 'utf8');

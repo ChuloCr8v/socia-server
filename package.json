@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "prisma generate && nest build",
+    "build": "prisma generate && nest build && cp -r src/email/templates dist/src/email/templates",
     "prisma:generate": "prisma generate",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -22,7 +22,6 @@
     "prisma:seed": "ts-node --transpile-only prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.9.0",
     "@nestjs/bullmq": "^11.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
@@ -52,7 +51,6 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "prisma": "^6.9.0"
-
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
