@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { bad } from 'src/utils/error.utils';
-import { message } from 'antd';
 
 @Injectable()
 export class ImagesService {
