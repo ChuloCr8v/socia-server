@@ -22,6 +22,11 @@ enum Role {
   USER
 }
 
+enum MenuAvailability {
+  AVAILABLE
+  UNAVAILABLE
+}
+
 enum UserStatus {
   ACTIVE
   SUSPENDED
@@ -32,6 +37,12 @@ enum AuthProvider {
   GOOGLE
   APPLE
   PASSWORD
+}
+
+enum BusinessType {
+  PHARMACY
+  RESTAURANT
+  GROCERY
 }
 
 model BankInformation {
@@ -85,6 +96,8 @@ model User {
   auth Auth?
   otps Otp[]
 
+  profileImage Image?
+
   vendor     Vendor?
   isVerified Boolean @default(false)
   role       Role    @default(USER)
@@ -95,6 +108,33 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Image {
+  id       String @id @default(uuid()) @db.Uuid
+  publicId String @unique
+  url      String
+
+  menu   Menu?   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId String? @db.Uuid
+
+  vendor   Vendor? @relation("VendorImage", fields: [vendorId], references: [id])
+  vendorId String? @db.Uuid
+
+  logoVendor   Vendor? @relation("VendorLogo", fields: [logoVendorId], references: [id])
+  logoVendorId String? @unique @db.Uuid
+
+  headerVendor   Vendor? @relation("VendorHeaderImage", fields: [headerVendorId], references: [id])
+  headerVendorId String? @unique @db.Uuid
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @unique @db.Uuid
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?   @unique @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 model Orders {
   id        String @id @default(uuid()) @db.Uuid
   pending   Int
@@ -102,28 +142,105 @@ model Orders {
   completed Int
 
   vendor   Vendor @relation(fields: [vendorId], references: [id])
-  vendorId String @unique @db.Uuid
+  vendorId String @db.Uuid
 }
 
 model Vendor {
-  id             String            @id @default(uuid()) @db.Uuid
-  vendorId       String            @unique
-  name           String?
-  email          String
-  businessName   String
-  address        String?
-  phone          String            @unique
-  cac            String?
-  logoUrl        String?
-  headerImageUrl String?
-  banks          BankInformation[]
-  openingTime    String?
-  closingTime    String?
-  user           User?             @relation(fields: [userId], references: [id])
-  userId         String            @unique @db.Uuid
-  status         UserStatus?       @default(ACTIVE)
+  id                  String            @id @default(uuid()) @db.Uuid
+  vendorId            String            @unique
+  logoUrl             Image?            @relation("VendorLogo")
+  headerImageUrl      Image?            @relation("VendorHeaderImage")
+  businessName        String
+  email               String?           @unique
+  businessDescription String?
+  businessLocation    String?
+  businessCity        String?
+  businessState       String?
+  address             String?
+  phone               String            @unique
+  cac                 String?
+  banks               BankInformation[]
+  openingTime         String?
+  closingTime         String?
+  user                User?             @relation(fields: [userId], references: [id])
+  userId              String            @unique @db.Uuid
+  status              UserStatus?       @default(ACTIVE)
+  businessCategory    String?
 
-  orders    Orders?
+  vendorImages Image[] @relation("VendorImage")
+
+  orders    Orders[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  Menu      Menu[]
+}
+
+model MenuItemSizeVariations {
+  id           String            @id @unique @default(uuid()) @db.Uuid
+  name         String
+  price        String
+  availability MenuAvailability? @default(AVAILABLE)
+  qty          Int
+  description  String?
+  isDefault    Boolean           @default(false)
+  menu         Menu              @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId       String            @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model addOn {
+  id           String            @id @unique @default(uuid()) @db.Uuid
+  name         String
+  price        String
+  availability MenuAvailability? @default(AVAILABLE)
+  qty          Int
+  description  String?
+  image        String?
+
+  menu   Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId String @db.Uuid
+
+  isRequired Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Category {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String?
+  image       Image?
+  isActive    Boolean @default(true)
+
+  menus  Menu[] // Relation to many menus
+  menuId String? @db.Uuid
+
+  businessType BusinessType? @default(RESTAURANT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Menu {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  vendor   Vendor @relation(fields: [vendorId], references: [id])
+  vendorId String @db.Uuid
+
+  name            String
+  description     String
+  price           Decimal                  @db.Decimal(10, 2)
+  availability    MenuAvailability?        @default(AVAILABLE)
+  preparationTime Int
+  stockQuantity   String?
+  variants        MenuItemSizeVariations[]
+  addons          addOn[]
+  images          Image[]
+  categories      Category[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

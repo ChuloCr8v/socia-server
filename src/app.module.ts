@@ -9,6 +9,9 @@ import { EmailModule } from './email/email.module.js';
 import { OtpModule } from './otp/otp.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { VendorsModule } from './vendors/vendors.module.js';
+import { MenuModule } from './menu/menu.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -22,7 +25,7 @@ import { VendorsModule } from './vendors/vendors.module.js';
         signOptions: { expiresIn: '1d' },
       }),
       inject: [ConfigService],
-    })],
+    }), MenuModule, CloudinaryModule, ImagesModule],
   controllers: [AppController],
   providers: [AppService,
     // {

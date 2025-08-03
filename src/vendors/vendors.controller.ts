@@ -46,4 +46,10 @@ export class VendorsController {
         const { email, otp } = dto
         return this.vendor.verifyVendor(email, otp)
     }
+
+    @Put("update-business-category/:id")
+    async updateBusinessCategory(@Param("id") id: string, @Body() dto: { businessCategory: string }) {
+        const { businessCategory } = dto
+        return this.vendor.updateBusinessCategory(id, businessCategory)
+    }
 }

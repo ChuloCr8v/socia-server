@@ -46,8 +46,7 @@ export class VendorsService {
                 },
                 vendor: {
                     create: {
-                        name: name || businessName,
-                        businessName,
+                        businessName: name || businessName,
                         phone: phone || '',
                         email,
                         vendorId: `VEN${generateShortId(4)}`,
@@ -117,5 +116,21 @@ export class VendorsService {
     }
 
 
+    async updateBusinessCategory(id: string, businessCategory: string) {
 
+        try {
+            const updatedVendor = await this.prisma.vendor.update({
+                where: { id },
+                data: { businessCategory },
+            });
+
+            return {
+                message: "Business category updated successfully",
+                data: updatedVendor,
+            };
+        } catch (error) {
+            console.log(error);
+            return bad(error.message);
+        }
+    }
 }
