@@ -7,7 +7,7 @@ import * as bodyParser from 'body-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'https://fda-server.onrender.com',
+    origin: ['https://fda-server.onrender.com', 'http://localhost:5173'],
     credentials: true,
   });
   // app.useGlobalPipes(new ValidationPipe());
