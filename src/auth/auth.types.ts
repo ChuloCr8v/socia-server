@@ -1,5 +1,6 @@
-import { IsArray, IsBoolean, IsEmail, IsOptional, isString, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsNumber, IsOptional, isString, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
+import { ImageDto } from 'src/vendors/types/menu';
 
 
 export enum OtpTypes {
@@ -60,10 +61,19 @@ export class CreateVendorDto {
     @IsString()
     phone?: string
 
+    @IsNumber()
+    @IsOptional()
+    deliveryFee?: number
+
     @IsBoolean()
     @IsOptional()
     isVerified?: boolean
 
+    // @IsArray()
+    // @IsOptional()
+    // @ValidateNested({ each: true })
+    // @Type(() => ImageDto)
+    // images: ImageDto[];
 
 }
 

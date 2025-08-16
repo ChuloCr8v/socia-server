@@ -7,25 +7,32 @@ import { OtpService } from '../otp/otp.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { bad } from '../utils/error.utils.js';
 import { isEmailTaken, isPhoneTaken, generateOtp, generateShortId } from '../utils/helpers.utils.js';
+import { ImageDto } from './types/menu.js';
 @Injectable()
 export class VendorsService {
     constructor(private prisma: PrismaService, private emailQueue: EmailQueue, private otp: OtpService, private auth: AuthService
     ) { }
 
     async listVendors() {
-        return await this.prisma.vendor.findMany({
-            include: {
-                user: {
-                    include: {
-                        otps: true
-                    }
-                },
-            }
-        })
+        try {
+            return await this.prisma.vendor.findMany({
+                include: {
+                    user: {
+                        include: {
+                            otps: true
+                        }
+                    },
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            bad(error)
+        }
+
     }
 
     async createVendor(dto: CreateVendorDto) {
-        const { email, phone, password, name, businessName, ...rest } = dto;
+        const { email, phone, password, name, businessName, deliveryFee, ...rest } = dto;
 
         if (await isEmailTaken(email)) bad('Email already exists');
         if (await isPhoneTaken(phone)) bad('Phone number already exists');
@@ -50,6 +57,7 @@ export class VendorsService {
                         phone: phone || '',
                         email,
                         vendorId: `VEN${generateShortId(4)}`,
+                        deliveryFee: deliveryFee || 0,
                         ...rest,
                     },
                 },
@@ -131,6 +139,27 @@ export class VendorsService {
         } catch (error) {
             console.log(error);
             return bad(error.message);
+        }
+    }
+
+    async updateBusinessProfilePicture(id: string, imageId: string) {
+        console.log(imageId)
+        try {
+            const vendor = await this.prisma.vendor.findUnique({ where: { id } })
+
+            if (!vendor) bad("Account not found!")
+
+            await this.prisma.vendor.update({
+                where: { id },
+                data: {
+                    profileImage: {
+                        connect: { id: imageId }
+                    }
+                },
+            })
+        } catch (error) {
+            console.log(error)
+            bad(error)
         }
     }
 }

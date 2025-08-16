@@ -32,6 +32,7 @@ export class AuthService {
             include: { auth: true },
         });
 
+
         if (!user || !(await verifyHash(user.auth?.passHash || '', password))) {
             bad('Invalid credentials');
         }
@@ -39,7 +40,7 @@ export class AuthService {
         return user;
     }
 
-    async login(user: any) {
+    async login(user: User) {
         const payload = { sub: user.id, email: user.email, role: user.role };
         return {
             accessToken: this.jwt.sign(payload),
@@ -159,7 +160,14 @@ export class AuthService {
         return this.prisma.user.findUnique({
             where: { id: user.sub || user.userId },
             include: {
-                vendor: true
+                vendor: {
+                    include: {
+                        logo: true,
+                        headerImage: true,
+                        profileImage: true
+                    }
+
+                }
             }
         });
     }

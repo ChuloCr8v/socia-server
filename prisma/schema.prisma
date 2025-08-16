@@ -116,11 +116,11 @@ model Image {
   menu   Menu?   @relation(fields: [menuId], references: [id], onDelete: Cascade)
   menuId String? @db.Uuid
 
-  vendor   Vendor? @relation("VendorImage", fields: [vendorId], references: [id])
-  vendorId String? @db.Uuid
-
   logoVendor   Vendor? @relation("VendorLogo", fields: [logoVendorId], references: [id])
   logoVendorId String? @unique @db.Uuid
+
+  vendorProfileImage Vendor? @relation("VendorProfileImage", fields: [profileImageId], references: [id])
+  profileImageId     String? @unique @db.Uuid
 
   headerVendor   Vendor? @relation("VendorHeaderImage", fields: [headerVendorId], references: [id])
   headerVendorId String? @unique @db.Uuid
@@ -148,8 +148,9 @@ model Orders {
 model Vendor {
   id                  String            @id @default(uuid()) @db.Uuid
   vendorId            String            @unique
-  logoUrl             Image?            @relation("VendorLogo")
-  headerImageUrl      Image?            @relation("VendorHeaderImage")
+  logo                Image?            @relation("VendorLogo")
+  profileImage        Image?            @relation("VendorProfileImage")
+  headerImage         Image?            @relation("VendorHeaderImage")
   businessName        String
   email               String?           @unique
   businessDescription String?
@@ -166,8 +167,9 @@ model Vendor {
   userId              String            @unique @db.Uuid
   status              UserStatus?       @default(ACTIVE)
   businessCategory    String?
-
-  vendorImages Image[] @relation("VendorImage")
+  rating              String?
+  deliveryTime        DateTime?
+  deliveryFee         Int
 
   orders    Orders[]
   createdAt DateTime @default(now())

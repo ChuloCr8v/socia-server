@@ -2,6 +2,7 @@ import { Body, Controller, Post, Get, Delete, Put, Param, UseGuards } from '@nes
 import { CreateVendorDto, validateUserDto } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { VendorsService } from './vendors.service.js';
+import { ImageDto } from './types/menu.js';
 
 @Controller('vendors')
 export class VendorsController {
@@ -51,5 +52,12 @@ export class VendorsController {
     async updateBusinessCategory(@Param("id") id: string, @Body() dto: { businessCategory: string }) {
         const { businessCategory } = dto
         return this.vendor.updateBusinessCategory(id, businessCategory)
+    }
+
+    @Put("update-business-profile-picture/:id")
+    async updateBusinessProfilePicture(@Param("id") id: string, @Body() dto: { imageId: string }) {
+        console.log('imageId', dto);
+
+        return this.vendor.updateBusinessProfilePicture(id, dto.imageId)
     }
 }

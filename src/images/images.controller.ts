@@ -1,5 +1,5 @@
 // src/images/images.controller.ts
-import { Controller, Post, UploadedFile, UseInterceptors, Delete, Param, UsePipes, Body } from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, Delete, Param, Body } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImagesService } from './images.service';
 import { ImageFileValidationPipe } from 'src/common/pipes/image-file-validation.pipe';
@@ -13,7 +13,6 @@ export class ImagesController {
     async uploadImage(
         @UploadedFile(ImageFileValidationPipe) file: Express.Multer.File,
     ) {
-        console.log(process.env.CLOUDINARY_API_SECRET, process.env.CLOUDINARY_API_KEY, process.env.CLOUDINARY_CLOUD_NAME)
         return this.imagesService.uploadImage(file);
     }
 

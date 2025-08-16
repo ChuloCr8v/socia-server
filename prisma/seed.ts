@@ -20,6 +20,11 @@ const users = [
         name: 'Nkematu Bonaventure',
         role: Role.ADMIN,
     },
+    {
+        email: 'cleverdevelopers360@gmail.com',
+        name: 'Nkematu Bonaventure',
+        role: Role.ADMIN,
+    },
 ];
 
 // Seed Categories with mock image data
@@ -76,6 +81,7 @@ async function seedUsers() {
         } else {
             console.log(`ℹ️ Skipped existing user: ${user.email}`);
         }
+
     }
 }
 
