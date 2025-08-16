@@ -169,7 +169,7 @@ model Vendor {
   businessCategory    String?
   rating              String?
   deliveryTime        DateTime?
-  deliveryFee         Int
+  deliveryFee         Int               @default(0)
 
   orders    Orders[]
   createdAt DateTime @default(now())
