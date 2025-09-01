@@ -1,5 +1,6 @@
 import { PrismaClient, Role } from '@prisma/client';
 import { hash } from 'argon2';
+import { userInfo } from 'os';
 
 const prisma = new PrismaClient();
 
@@ -9,22 +10,26 @@ const users = [
         email: 'chrisejike16@gmail.com',
         name: 'Ejiekme Agunwa',
         role: Role.USER,
+        phone: "09012345679",
+        userId: "UO002"
+
     },
     {
         email: 'johnpaulnduka400@gmail.com',
         name: 'Johnpaul Nduka',
+        phone: "012345679",
         role: Role.USER,
+        userId: "UO003"
+
     },
     {
         email: 'cleverdeveloper360@gmail.com',
         name: 'Nkematu Bonaventure',
+        phone: "08138369977",
         role: Role.ADMIN,
+        userId: "UO001"
     },
-    {
-        email: 'cleverdevelopers360@gmail.com',
-        name: 'Nkematu Bonaventure',
-        role: Role.ADMIN,
-    },
+
 ];
 
 // Seed Categories with mock image data
@@ -66,6 +71,7 @@ async function seedUsers() {
                 data: {
                     email: user.email,
                     name: user.name,
+                    phone: user.phone,
                     role: user.role,
                     isVerified: true,
                     auth: {
@@ -75,6 +81,7 @@ async function seedUsers() {
                             ),
                         },
                     },
+                    userId: user.userId
                 },
             });
             console.log(`✅ Created user: ${user.email}`);

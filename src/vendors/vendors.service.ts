@@ -1,17 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { hash } from 'argon2';
 import { AuthService } from '../auth/auth.service.js';
-import { CreateVendorDto } from '../auth/auth.types.js';
+import { CreateVendorDto, UpdateVendorDto } from '../auth/auth.types.js';
 import { EmailQueue } from '../email/email.queue.js';
 import { OtpService } from '../otp/otp.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { bad } from '../utils/error.utils.js';
 import { isEmailTaken, isPhoneTaken, generateOtp, generateShortId } from '../utils/helpers.utils.js';
-import { ImageDto } from './types/menu.js';
 @Injectable()
 export class VendorsService {
     constructor(private prisma: PrismaService, private emailQueue: EmailQueue, private otp: OtpService, private auth: AuthService
     ) { }
+
+    async getVendor(id: string) {
+        try {
+            const vendor = await this.prisma.vendor.findUnique({
+                where: { id },
+                include: {
+                    user: { include: { otps: true } },
+                    operatingHour: true,
+                    menu: true,
+                    profileImage: true,
+                },
+            });
+
+            if (!vendor) {
+                throw new Error(`Vendor with id ${id} not found`);
+            }
+
+            return vendor;
+        } catch (error) {
+            console.error(error);
+            bad(error);
+        }
+    }
+
 
     async listVendors() {
         try {
@@ -22,6 +45,9 @@ export class VendorsService {
                             otps: true
                         }
                     },
+                    operatingHour: true,
+                    menu: true,
+                    profileImage: true,
                 }
             })
         } catch (error) {
@@ -46,6 +72,7 @@ export class VendorsService {
                 email,
                 isVerified: dto.isVerified ?? false,
                 name: name || businessName,
+                phone: phone || '',
                 auth: {
                     create: {
                         passHash,
@@ -162,4 +189,42 @@ export class VendorsService {
             bad(error)
         }
     }
+
+    async updateVendor(id: string, dto: UpdateVendorDto) {
+        try {
+            const vendor = await this.prisma.vendor.findUnique({ where: { id } });
+
+            if (!vendor) {
+                bad("Vendor not found");
+            }
+
+            const { operatingHour, ...rest } = dto;
+
+            const updatedVendor = await this.prisma.vendor.update({
+                where: { id },
+                data: {
+                    ...rest,
+                    ...(dto.operatingHour && {
+                        operatingHour: {
+                            deleteMany: {},
+                            create: dto.operatingHour.map((o) => ({
+                                day: o.day,
+                                opening: o.opening ? new Date(o.opening) : null,
+                                closing: o.closing ? new Date(o.closing) : null,
+                                isOpen: o.isOpen,
+                            })),
+                        },
+                    }),
+                },
+
+            });
+
+
+            return updatedVendor;
+        } catch (error) {
+            console.log(error);
+            bad(error);
+        }
+    }
+
 }

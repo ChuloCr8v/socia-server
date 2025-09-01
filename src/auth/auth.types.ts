@@ -1,6 +1,8 @@
-import { IsArray, IsBoolean, IsEmail, IsNumber, IsOptional, isString, IsString, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsISO8601, IsNumber, IsOptional, isString, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
 import { ImageDto } from 'src/vendors/types/menu';
+import { PartialType } from '@nestjs/mapped-types';
+
 
 
 export enum OtpTypes {
@@ -108,6 +110,30 @@ export class VendorDto extends CreateVendorDto {
 
 }
 
+
+export class OperatingHourDto {
+    @IsString()
+    day: string;
+
+    @IsOptional()
+    @IsISO8601()
+    opening?: string;   // matches Prisma schema
+
+    @IsOptional()
+    @IsISO8601()
+    closing?: string;
+
+    @IsBoolean()
+    isOpen: boolean;
+}
+
+export class UpdateVendorDto extends PartialType(CreateVendorDto) {
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => OperatingHourDto)
+    operatingHour?: OperatingHourDto[];
+}
 export class validateUserDto {
     @IsEmail()
     email: string

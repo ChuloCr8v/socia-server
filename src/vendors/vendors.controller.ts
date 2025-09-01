@@ -1,8 +1,7 @@
-import { Body, Controller, Post, Get, Delete, Put, Param, UseGuards } from '@nestjs/common';
-import { CreateVendorDto, validateUserDto } from '../auth/auth.types.js';
+import { Body, Controller, Post, Get, Delete, Put, Param } from '@nestjs/common';
+import { CreateVendorDto, UpdateVendorDto, validateUserDto } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { VendorsService } from './vendors.service.js';
-import { ImageDto } from './types/menu.js';
 
 @Controller('vendors')
 export class VendorsController {
@@ -21,6 +20,11 @@ export class VendorsController {
     @Get()
     async listAllVendors() {
         return this.vendor.listVendors()
+    }
+
+    @Get(":id")
+    async getVendor(@Param("id") id: string) {
+        return this.vendor.getVendor(id)
     }
 
     @Delete(':id')
@@ -54,9 +58,15 @@ export class VendorsController {
         return this.vendor.updateBusinessCategory(id, businessCategory)
     }
 
+    @Put("update-vendor/:id")
+    async updateVendor(@Param("id") id: string, @Body() dto: UpdateVendorDto) {
+        return this.vendor.updateVendor(id, dto)
+    }
+
+
     @Put("update-business-profile-picture/:id")
     async updateBusinessProfilePicture(@Param("id") id: string, @Body() dto: { imageId: string }) {
-        console.log('imageId', dto);
+        console.log('updateDto', dto);
 
         return this.vendor.updateBusinessProfilePicture(id, dto.imageId)
     }

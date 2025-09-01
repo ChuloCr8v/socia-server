@@ -66,6 +66,7 @@ export class AuthService {
                 data: {
                     email,
                     name,
+                    phone: user.phone ?? "",
                     auth: {
                         create: {
                             provider: 'GOOGLE',
@@ -134,6 +135,7 @@ export class AuthService {
                     email,
                     name: '',
                     isVerified: true,
+                    phone: "",
                     auth: {
                         create: {
                             provider: 'APPLE',
@@ -164,7 +166,8 @@ export class AuthService {
                     include: {
                         logo: true,
                         headerImage: true,
-                        profileImage: true
+                        profileImage: true,
+                        operatingHour: true
                     }
 
                 }

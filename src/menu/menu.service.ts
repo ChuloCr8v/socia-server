@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { tryCatch } from 'bullmq';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { bad } from 'src/utils/error.utils';
 import { CreateMenuDto } from 'src/vendors/types/menu';
