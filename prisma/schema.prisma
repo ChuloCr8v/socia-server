@@ -89,9 +89,9 @@ model Otp {
 }
 
 model User {
-  id    String @id @default(uuid()) @db.Uuid
-  email String @unique
-  phone String @unique
+  id    String  @id @default(uuid()) @db.Uuid
+  email String  @unique
+  phone String? @unique
   name  String
 
   userId String?  @unique
