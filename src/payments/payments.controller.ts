@@ -38,7 +38,6 @@ export class PaymentsController {
         // Handle events (success, failed, chargeback, etc.)
         if (body.event === 'charge.success') {
             const data = body.data;
-            console.log('✅ Payment confirmed via webhook:', data);
 
             // TODO: Save to DB or update order status
         }

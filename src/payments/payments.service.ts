@@ -14,7 +14,12 @@ export class PaymentsService {
         const response = await firstValueFrom(
             this.httpService.post(
                 url,
-                { email, amount },
+                {
+                    email,
+                    amount,
+                    callback_url: `${process.env.BASE_URL}/paystack/callback`,
+                    cancel_url: `${process.env.BASE_URL}/paystack/cancel`,
+                },
                 {
                     headers: {
                         Authorization: `Bearer ${this.paystackSecret}`,
@@ -26,6 +31,7 @@ export class PaymentsService {
 
         return response.data;
     }
+
 
     async verifyTransaction(reference: string) {
         const url = `https://api.paystack.co/transaction/verify/${reference}`;
