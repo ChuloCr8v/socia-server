@@ -74,6 +74,7 @@ model Auth {
 enum OtpTypes {
   EMAIL_VERIFICATION
   RESET_PASSWORD
+  ACCOUNT_VERIFICATION
 }
 
 model Otp {

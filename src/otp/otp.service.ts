@@ -12,7 +12,6 @@ export class OtpService {
     constructor(private prisma: PrismaService) { }
 
     async verifyOtp(userId: string, otp: string) {
-        console.log("otp", otp, userId)
         try {
             const getOtp = await this.prisma.otp.findFirst({
                 where: { userId },
@@ -34,7 +33,6 @@ export class OtpService {
 
             await this.prisma.otp.delete({ where: { id: getOtp.id } });
 
-            console.log("otp true")
             return true;
         } catch (error: any) {
             this.logger.error('OTP verification failed', error);

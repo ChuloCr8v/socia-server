@@ -12,6 +12,8 @@ import { VendorsModule } from './vendors/vendors.module.js';
 import { MenuModule } from './menu/menu.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ImagesModule } from './images/images.module';
+import { UsersModule } from './users/users.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { ImagesModule } from './images/images.module';
         signOptions: { expiresIn: '1d' },
       }),
       inject: [ConfigService],
-    }), MenuModule, CloudinaryModule, ImagesModule],
+    }), MenuModule, CloudinaryModule, ImagesModule, UsersModule, PaymentsModule],
   controllers: [AppController],
   providers: [AppService,
     // {

@@ -119,8 +119,6 @@ export class VendorsService {
 
         if (!user) return bad("Account does not exist!");
 
-        const otpToString = otp.toString()
-        console.log("otp type", typeof otp)
         await this.otp.verifyOtp(user.id, otp);
 
         await this.prisma.user.update({
@@ -128,7 +126,7 @@ export class VendorsService {
             data: { isVerified: true },
         });
 
-        // await this.emailQueue.enqueueVerifyAccount(email, user.name);
+        await this.emailQueue.enqueueVerifyAccount(email, user.name);
 
         const payload = {
             id: user.id,
