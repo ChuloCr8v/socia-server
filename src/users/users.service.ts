@@ -46,8 +46,7 @@ export class UsersService {
 
 
     async createUser(dto: CreateUserDto) {
-        const { email, phoneNumber, password, name, ...rest } = dto;
-        console.log(dto)
+        const { email, phoneNumber, password, name } = dto;
 
         if (await isEmailTaken(email)) bad('Email already exists');
         if (await isPhoneTaken(phoneNumber)) bad('Phone number already exists');
@@ -58,6 +57,9 @@ export class UsersService {
 
         const user = await this.prismaService.user.create({
             data: {
+                address: dto.address,
+                city: dto.city,
+                state: dto.state,
                 email,
                 isVerified: dto.isVerified ?? false,
                 name: name,

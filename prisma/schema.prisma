@@ -95,6 +95,10 @@ model User {
   phone String? @unique
   name  String
 
+  state   String?
+  city    String?
+  address String?
+
   userId String?  @unique
   auth   Auth?
   otps   Otp[]

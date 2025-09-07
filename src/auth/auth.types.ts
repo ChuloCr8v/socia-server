@@ -31,6 +31,14 @@ export class CreateUserDto {
     @IsNotEmpty()
     address: string
 
+    @IsString()
+    @IsNotEmpty()
+    city: string
+
+    @IsString()
+    @IsNotEmpty()
+    state: string
+
     @IsBoolean()
     @IsOptional()
     isActive?: boolean
