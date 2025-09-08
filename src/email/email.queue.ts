@@ -3,11 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 export enum EmailQueues {
-    SEND_OTP = "SEND_OTP",
-    VERIFY_ACCOUNT = "VERIFY_ACCOUNT",
+    SEND_OTP = 'SEND_OTP',
+    VERIFY_ACCOUNT = 'VERIFY_ACCOUNT',
     RESET_PASSWORD = 'RESET_PASSWORD',
     RESET_PASSWORD_SUCCESSFUL = 'RESET_PASSWORD_SUCCESSFUL',
-
+    SEND_ORDER = 'SEND_ORDER',           // customer receipt
+    SEND_VENDOR_ORDER = 'SEND_VENDOR_ORDER', // vendor notification
 }
 
 @Injectable()
@@ -28,16 +29,38 @@ export class EmailQueue {
         await this.queue.add(EmailQueues.VERIFY_ACCOUNT, { to, name });
     }
 
-    async enqueueResetPasswordOtp(to: string, otp: string,
-        name: string) {
-
-
+    async enqueueResetPasswordOtp(to: string, otp: string, name: string) {
         await this.queue.add(EmailQueues.RESET_PASSWORD, { to, otp, name });
-
     }
 
-    async enqueueResetPasswordSuccessful(to: string,
-        name: string) {
+    async enqueueResetPasswordSuccessful(to: string, name: string) {
         await this.queue.add(EmailQueues.RESET_PASSWORD_SUCCESSFUL, { to, name });
+    }
+
+    // ✅ Customer order receipt
+    async enqueueSendOrderEmail(payload: {
+        to: string;
+        customerName: string;
+        orderId: string;
+        items: { name: string; quantity: number; total: number }[];
+        subtotal: number;
+        tax: number;
+        deliveryFee: number;
+        totalAmount: number;
+    }) {
+        await this.queue.add(EmailQueues.SEND_ORDER, payload);
+    }
+
+    // ✅ Vendor new order notification
+    async enqueueVendorOrderEmail(payload: {
+        to: string;
+        vendorName: string;
+        orderId: string;
+        customerName: string;
+        items: { name: string; quantity: number; total: number }[];
+        totalAmount: number;
+        actionUrl: string;
+    }) {
+        await this.queue.add(EmailQueues.SEND_VENDOR_ORDER, payload);
     }
 }

@@ -3,6 +3,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EmailQueues } from './email.queue.js';
 import { EmailService } from './email.service.js';
+
 @Injectable()
 export class EmailProcessor implements OnModuleInit {
     private worker: Worker;
@@ -16,27 +17,45 @@ export class EmailProcessor implements OnModuleInit {
         this.worker = new Worker(
             'emailQueue',
             async job => {
-                const { name, to, otp } = job.data;
-
                 switch (job.name) {
-                    case EmailQueues.SEND_OTP:
+                    case EmailQueues.SEND_OTP: {
+                        const { to, otp, name } = job.data;
                         await this.emailService.sendOtpEmail(to, otp, name);
                         break;
+                    }
 
-                    case EmailQueues.VERIFY_ACCOUNT:
+                    case EmailQueues.VERIFY_ACCOUNT: {
+                        const { to, name } = job.data;
                         await this.emailService.sendAccountVerifiedEmail(to, name);
                         break;
+                    }
 
-                    case EmailQueues.RESET_PASSWORD:
+                    case EmailQueues.RESET_PASSWORD: {
+                        const { to, otp, name } = job.data;
                         await this.emailService.sendResetPasswordOtp(to, otp, name);
                         break;
+                    }
 
-                    case EmailQueues.RESET_PASSWORD_SUCCESSFUL:
+                    case EmailQueues.RESET_PASSWORD_SUCCESSFUL: {
+                        const { to, name } = job.data;
                         await this.emailService.sendResetPasswordSuccessful(to, name);
                         break;
+                    }
+
+                    case EmailQueues.SEND_ORDER: {
+                        const payload = job.data;
+                        await this.emailService.sendOrderReceipt(payload);
+                        break;
+                    }
+
+                    case EmailQueues.SEND_VENDOR_ORDER: {
+                        const payload = job.data;
+                        await this.emailService.sendVendorOrderNotification(payload);
+                        break;
+                    }
 
                     default:
-                        console.warn(`Unknown job type: ${job.name}`);
+                        console.warn(`[EmailQueue] Unknown job type: ${job.name}`);
                 }
             },
             {
@@ -46,7 +65,7 @@ export class EmailProcessor implements OnModuleInit {
             },
         );
 
-        // ✅ Add logging and error tracking
+        // ✅ Logging
         this.worker.on('completed', job => {
             console.log(`[EmailQueue] Job completed: ${job.id} (${job.name})`);
         });

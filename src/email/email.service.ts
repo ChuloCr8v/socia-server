@@ -81,4 +81,68 @@ export class EmailService {
 
         return this.sendEmail(to, 'Reset Account Password', html);
     }
+
+    async sendOrderReceipt(payload: {
+        to: string;
+        customerName: string;
+        orderId: string;
+        orderItems: {
+            name: string;
+            quantity: number;
+            totalCost: number;
+            customizations: {
+                variants: { name: string };
+                extras: { name: string; count: number; total: number }[];
+            };
+        }[];
+        orderTotal: number;
+    }) {
+        const filePath = join(__dirname, 'templates', 'order-sent.ejs');
+        const template = await readFile(filePath, 'utf8');
+
+        const html = ejs.render(template, {
+            ...payload,
+            year: new Date().getFullYear(),
+        });
+
+        await this.sendEmail(
+            payload.to,
+            `Your Receipt for Order #${payload.orderId}`,
+            html,
+        );
+    }
+
+
+    async sendVendorOrderNotification(payload: {
+        to: string;
+        vendorName: string;
+        orderId: string;
+        customerName: string;
+        orderItems: {
+            name: string;
+            quantity: number;
+            totalCost: number;
+            customizations: {
+                variants: { name: string };
+                extras: { name: string; count: number; total: number }[];
+            };
+        }[];
+        totalAmount: number;
+        actionUrl: string;
+    }) {
+        const filePath = join(__dirname, 'templates', 'order-received.ejs');
+        const template = await readFile(filePath, 'utf8');
+
+        const html = ejs.render(template, {
+            ...payload,
+            year: new Date().getFullYear(),
+        });
+
+        await this.sendEmail(
+            payload.to,
+            `New Order Received #${payload.orderId}`,
+            html,
+        );
+    }
+
 }

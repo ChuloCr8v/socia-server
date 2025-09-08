@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "prisma generate && nest build && cp -r src/email/templates dist/src/email/templates",
+    "build": "prisma generate && nest build && npx copyfiles -u 1 src/email/templates/**/* dist/src/email/templates",
     "prisma:generate": "prisma generate",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -31,7 +31,9 @@
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^11.1.6",
     "@nestjs/schedule": "^6.0.0",
+    "@nestjs/websockets": "^11.1.6",
     "@prisma/client": "^6.9.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/passport-jwt": "^4.0.1",
@@ -55,7 +57,8 @@
     "prisma": "^6.9.0",
     "react-native-paper-dropdown": "^2.3.1",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
