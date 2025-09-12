@@ -33,6 +33,12 @@ export class OrderController {
         return this.orderService.getUserOrders(req.user.id);
     }
 
+    @Auth()
+    @Get(":orderId")
+    async getOrder(@Param("orderId") orderId: string) {
+        return this.orderService.getOrder(orderId);
+    }
+
     // ✅ Vendor/Admin can update order status
     @Patch(':id/status')
     async updateOrderStatus(

@@ -4,6 +4,8 @@ import { EmailQueue } from '../email/email.queue.js';
 import { OrderGateway } from './order.gateway';
 import { OrderStatus } from '@prisma/client';
 import { CreateOrderDto } from './types';
+import { PaymentsService } from 'src/payments/payments.service';
+import { bad } from 'src/utils/error.utils';
 
 @Injectable()
 export class OrderService {
@@ -11,6 +13,7 @@ export class OrderService {
         private prisma: PrismaService,
         private emailQueue: EmailQueue,
         private orderGateway: OrderGateway,
+        private paymentsService: PaymentsService
     ) { }
 
     async createOrder(dto: CreateOrderDto, userId: string) {
@@ -22,6 +25,12 @@ export class OrderService {
             throw new Error('Invalid user or vendor');
         }
 
+        console.log(dto)
+
+        const verifyPayment = await this.paymentsService.verifyTransaction(dto.paymentReference)
+
+        if (!verifyPayment) bad("Payment Verificaton failed, Unable to create order.")
+
         // ✅ Create order inside transaction
         const order = await this.prisma.$transaction(async (tx) => {
             return tx.order.create({
@@ -32,22 +41,26 @@ export class OrderService {
                     tax: dto.tax,
                     deliveryFee: dto.deliveryFee,
                     total: dto.total,
+                    deliveryAddress: dto.deliveryAddress,
+                    paymentReference: dto.paymentReference,
+                    noteForRider: dto.noteForRider,
                     items: {
                         create: dto.items.map((item) => ({
                             menuId: item.menuId,
                             name: item.name,
                             image: item.image,
-                            basePrice: Number(item.price), // keep price consistent
+                            basePrice: Number(item.basePrice), // keep price consistent
                             quantity: item.quantity,
-                            totalCost: item.totalCost,
+                            totalCost: Number(item.totalCost),
+                            note: item.notes,
                             variant: item.variant
                                 ? {
                                     create: {
                                         variantId: item.variant.id,
                                         name: item.variant.name,
-                                        price: item.variant.price,
+                                        price: Number(item.variant.price),
                                         count: item.variant.count,
-                                        total: item.variant.total,
+                                        total: Number(item.variant.total),
                                         isDefault: item.variant.isDefault || false,
                                     },
                                 }
@@ -59,12 +72,13 @@ export class OrderService {
                                         name: extra.name,
                                         price: extra.price,
                                         count: extra.count,
-                                        total: extra.total,
+                                        total: Number(extra.total),
                                     })),
                                 }
                                 : undefined,
                         })),
                     },
+                    status: "PLACED"
                 },
                 include: {
                     user: true,
@@ -73,7 +87,6 @@ export class OrderService {
             });
         });
 
-        console.log("sendng emal", vendor, user)
         // 📧 Send receipt to customer
         await this.emailQueue.enqueueSendOrderEmail({
             to: order.user.email,
@@ -92,7 +105,8 @@ export class OrderService {
 
         // 📧 Send notification to vendor
         await this.emailQueue.enqueueVendorOrderEmail({
-            to: vendor.email ?? 'vendor@example.com',
+            // to: vendor.email ?? 'vendor@example.com',
+            to: "chrisejike16@gmail.com",
             vendorName: vendor.businessName ?? 'Vendor',
             orderId: order.id,
             customerName: user.name.split(' ')[0] || 'Customer',
@@ -116,7 +130,45 @@ export class OrderService {
     async getUserOrders(userId: string) {
         return this.prisma.order.findMany({
             where: { userId },
-            include: { items: { include: { variant: true, extras: true } } },
+            include: {
+                items: {
+                    include: {
+                        variant: true,
+                        extras: true
+                    }
+                },
+                user: true,
+                vendor: {
+                    include: {
+                        profileImage: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+
+        });
+    }
+
+
+    async getOrder(orderId: string) {
+        return this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                items: {
+                    include: {
+                        variant: true,
+                        extras: true
+                    }
+                },
+                user: true,
+                vendor: {
+                    include: {
+                        profileImage: true
+                    }
+                }
+            },
         });
     }
 

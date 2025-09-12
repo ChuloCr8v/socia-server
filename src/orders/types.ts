@@ -45,11 +45,16 @@ class OrderItemDto {
     @IsString()
     name: string;
 
+
+    @IsString()
+    @IsOptional()
+    notes: string;
+
     @IsString()
     image: string;
 
     @IsNumber()
-    price: number;
+    basePrice: number;
 
     @IsNumber()
     quantity: number;
@@ -72,6 +77,9 @@ export class CreateOrderDto {
     @IsString()
     vendorId: string;
 
+    @IsString()
+    paymentReference: string;
+
     @IsNumber()
     subtotal: number;
 
@@ -83,6 +91,13 @@ export class CreateOrderDto {
 
     @IsNumber()
     total: number;
+
+    @IsString()
+    deliveryAddress: string
+
+    @IsString()
+    @IsOptional()
+    noteForRider?: string
 
     @IsArray()
     @ValidateNested({ each: true })
