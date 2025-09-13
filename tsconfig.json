@@ -1,21 +1,23 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
+    "module": "commonjs", // ✅ required for Node.js/NestJS
+    "declaration": true, // generates .d.ts files
     "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true, // ✅ required for NestJS
+    "experimentalDecorators": true, // ✅ required for NestJS
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "ES2021", // good choice for modern Node
     "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
+    "outDir": "./dist", // compiled JS goes here
+    "baseUrl": "./", // project root
     "incremental": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true, // faster builds
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src"], // 👈 add this (only compile from src)
+  "exclude": ["node_modules", "dist"] // 👈 prevent re-compiling dist
 }
