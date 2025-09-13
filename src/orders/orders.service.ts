@@ -105,8 +105,8 @@ export class OrderService {
 
         // 📧 Send notification to vendor
         await this.emailQueue.enqueueVendorOrderEmail({
-            // to: vendor.email ?? 'vendor@example.com',
-            to: "chrisejike16@gmail.com",
+            to: vendor.email ?? 'vendor@example.com',
+            // to: "chrisejike16@gmail.com",
             vendorName: vendor.businessName ?? 'Vendor',
             orderId: order.id,
             customerName: user.name.split(' ')[0] || 'Customer',
