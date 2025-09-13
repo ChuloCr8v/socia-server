@@ -6,29 +6,29 @@ const prisma = new PrismaClient();
 
 // Seed Users
 const users = [
-    {
-        email: 'chrisejike16@gmail.com',
-        name: 'Ejiekme Agunwa',
-        role: Role.USER,
-        phone: "09012345679",
-        userId: "UO002"
+    // {
+    //     email: 'chrisejike16@gmail.com',
+    //     name: 'Ejiekme Agunwa',
+    //     role: Role.USER,
+    //     phone: "09012345679",
+    //     userId: "UO002"
 
-    },
-    {
-        email: 'johnpaulnduka400@gmail.com',
-        name: 'Johnpaul Nduka',
-        phone: "012345679",
-        role: Role.USER,
-        userId: "UO003"
+    // },
+    // {
+    //     email: 'johnpaulnduka400@gmail.com',
+    //     name: 'Johnpaul Nduka',
+    //     phone: "012345679",
+    //     role: Role.USER,
+    //     userId: "UO003"
 
-    },
-    {
-        email: 'cleverdeveloper360@gmail.com',
-        name: 'Nkematu Bonaventure',
-        phone: "08138369977",
-        role: Role.ADMIN,
-        userId: "UO001"
-    },
+    // },
+    // {
+    //     email: 'cleverdeveloper360@gmail.com',
+    //     name: 'Nkematu Bonaventure',
+    //     phone: "08138369977",
+    //     role: Role.ADMIN,
+    //     userId: "UO001"
+    // },
 
 ];
 

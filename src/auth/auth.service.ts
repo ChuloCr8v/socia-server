@@ -159,7 +159,7 @@ export class AuthService {
     }
 
     async authUser(user: IAuthUser) {
-        return this.prisma.user.findUnique({
+        return await this.prisma.user.findUnique({
             where: { id: user.sub || user.userId },
             include: {
                 vendor: {
