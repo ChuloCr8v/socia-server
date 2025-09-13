@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "prisma generate && nest build && npx copyfiles -u 2 src/email/templates/**/* dist/email/templates",
+    "build": "nest build",
     "prisma:generate": "prisma generate",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
