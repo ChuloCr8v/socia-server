@@ -12,6 +12,7 @@ import { OrderService } from './orders.service';
 import { CreateOrderDto, UpdateOrderStatusDto } from './types';
 import { OrderStatus } from '@prisma/client';
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { IAuthUser } from 'src/auth/auth.types';
 @Controller('orders')
 
 
@@ -31,6 +32,13 @@ export class OrderController {
     @Auth()
     async getUserOrders(@Req() req: any) {
         return this.orderService.getUserOrders(req.user.id);
+    }
+
+    // ✅ Get all orders for logged-in user
+    @Get()
+    @Auth()
+    async getVendorOrders(@Req() req: IAuthUser) {
+        return this.orderService.getUserOrders(req.userId ?? req.userId);
     }
 
     @Auth()
