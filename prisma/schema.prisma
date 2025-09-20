@@ -32,6 +32,7 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
   PENDING
+  RECEIVED
 }
 
 enum MenuAvailability {
@@ -89,6 +90,28 @@ enum OtpTypes {
   ACCOUNT_VERIFICATION
 }
 
+enum NotificationType {
+  ORDER
+  PAYMENT
+  SYSTEM
+  PROMOTION
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String // 'order' | 'status' | 'promo' | 'system'
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  timestamp DateTime @default(now())
+
+  senderId   String? @db.Uuid
+  receiverId String? @db.Uuid
+
+  sender   User? @relation("SentNotifications", fields: [senderId], references: [id])
+  receiver User? @relation("ReceivedNotifications", fields: [receiverId], references: [id])
+}
+
 model Otp {
   id        String   @id @default(uuid()) @db.Uuid
   otp       String
@@ -128,6 +151,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   orders Order[]
+
+  //notifications
+  sentNotifications     Notification[] @relation("SentNotifications")
+  receivedNotifications Notification[] @relation("ReceivedNotifications")
 }
 
 model Order {
@@ -140,14 +167,17 @@ model Order {
   deliveryFee      Float
   total            Float
   items            OrderItem[]
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
   deliveryAddress  String
   paymentReference String
   noteForRider     String?     @default("")
 
   user   User   @relation(fields: [userId], references: [id])
   vendor Vendor @relation(fields: [vendorId], references: [id])
+
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {

@@ -36,29 +36,86 @@ const users = [
 const categories = [
     {
         name: 'Swallow',
-        description: 'Balls of Delight',
+        description: 'Balls of Delight like Eba, Fufu, Amala, and Pounded Yam',
         image: {
-            url: 'https://via.placeholder.com/300x200.png?text=Pizza',
+            url: 'https://via.placeholder.com/300x200.png?text=Swallow',
             publicId: 'img-id-1',
         },
     },
     {
-        name: 'Rice',
-        description: 'Cheffed for all ocassions',
+        name: 'Rice Dishes',
+        description: 'Jollof, Fried Rice, Ofada and more',
         image: {
-            url: 'https://via.placeholder.com/300x200.png?text=Burgers',
+            url: 'https://via.placeholder.com/300x200.png?text=Rice',
             publicId: 'img-id-2',
         },
     },
     {
-        name: 'Drinks',
-        description: 'Refreshing beverages and soft drinks',
+        name: 'Soups & Stews',
+        description: 'Egusi, Ogbono, Afang, Nsala, and other rich flavors',
         image: {
-            url: 'https://via.placeholder.com/300x200.png?text=Drinks',
+            url: 'https://via.placeholder.com/300x200.png?text=Soups',
             publicId: 'img-id-3',
         },
     },
+    {
+        name: 'Grills & Barbecue',
+        description: 'Suya, Chicken, Beef, and Fish straight from the fire',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Grills',
+            publicId: 'img-id-4',
+        },
+    },
+    {
+        name: 'Snacks',
+        description: 'Puff-Puff, Buns, Meat Pie, and Chin Chin',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Snacks',
+            publicId: 'img-id-5',
+        },
+    },
+    {
+        name: 'Seafood',
+        description: 'Peppered Fish, Catfish Pepper Soup, and Prawns',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Seafood',
+            publicId: 'img-id-6',
+        },
+    },
+    {
+        name: 'Vegetarian',
+        description: 'Plantain, Beans, Moi Moi, and Veggie Stir-Fries',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Vegetarian',
+            publicId: 'img-id-7',
+        },
+    },
+    {
+        name: 'Drinks',
+        description: 'Zobo, Palm Wine, Chapman, Smoothies, and Soft Drinks',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Drinks',
+            publicId: 'img-id-8',
+        },
+    },
+    {
+        name: 'Desserts',
+        description: 'Cakes, Pastries, and Nigerian sweets',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Desserts',
+            publicId: 'img-id-9',
+        },
+    },
+    {
+        name: 'Ice Cream & Frozen Treats',
+        description: 'Ice Cream, Frozen Yogurt, and Shakes',
+        image: {
+            url: 'https://via.placeholder.com/300x200.png?text=Ice+Cream',
+            publicId: 'img-id-10',
+        },
+    },
 ];
+
 
 async function seedUsers() {
     for (const user of users) {

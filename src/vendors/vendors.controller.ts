@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Delete, Put, Param } from '@nestjs/common';
+import { Body, Controller, Post, Get, Delete, Put, Param, Patch } from '@nestjs/common';
 import { CreateVendorDto, UpdateVendorDto, validateUserDto } from '../auth/auth.types.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { VendorsService } from './vendors.service.js';
@@ -64,7 +64,7 @@ export class VendorsController {
     }
 
 
-    @Put("update-business-profile-picture/:id")
+    @Patch("update-business-profile-picture/:id")
     async updateBusinessProfilePicture(@Param("id") id: string, @Body() dto: { imageId: string }) {
         console.log('updateDto', dto);
 

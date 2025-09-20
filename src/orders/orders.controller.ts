@@ -19,7 +19,6 @@ import { IAuthUser } from 'src/auth/auth.types';
 export class OrderController {
     constructor(private readonly orderService: OrderService) { }
 
-    // ✅ Create new order (authenticated user)
     @Post()
     @Auth()
     async createOrder(@Req() req: any, @Body() dto: CreateOrderDto) {
@@ -27,18 +26,17 @@ export class OrderController {
         return this.orderService.createOrder(dto, userId);
     }
 
-    // ✅ Get all orders for logged-in user
+
+    @Get("vendor")
+    @Auth("VENDOR")
+    async getVendorOrders(@Req() req: any) {
+        return this.orderService.getVendorOrders(req.user.id);
+    }
+
     @Get()
     @Auth()
     async getUserOrders(@Req() req: any) {
         return this.orderService.getUserOrders(req.user.id);
-    }
-
-    // ✅ Get all orders for logged-in user
-    @Get()
-    @Auth()
-    async getVendorOrders(@Req() req: IAuthUser) {
-        return this.orderService.getUserOrders(req.userId ?? req.userId);
     }
 
     @Auth()
@@ -47,7 +45,6 @@ export class OrderController {
         return this.orderService.getOrder(orderId);
     }
 
-    // ✅ Vendor/Admin can update order status
     @Patch(':id/status')
     async updateOrderStatus(
         @Param('id') id: string,
@@ -58,4 +55,5 @@ export class OrderController {
             body.status as OrderStatus,
         );
     }
+
 }

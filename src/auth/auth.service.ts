@@ -32,7 +32,6 @@ export class AuthService {
             include: { auth: true },
         });
 
-
         if (!user || !(await verifyHash(user.auth?.passHash || '', password))) {
             bad('Invalid credentials');
         }

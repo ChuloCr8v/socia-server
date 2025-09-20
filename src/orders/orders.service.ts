@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailQueue } from '../email/email.queue.js';
-import { OrderGateway } from './order.gateway';
 import { OrderStatus } from '@prisma/client';
 import { CreateOrderDto } from './types';
 import { PaymentsService } from 'src/payments/payments.service';
 import { bad } from 'src/utils/error.utils';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class OrderService {
     constructor(
         private prisma: PrismaService,
         private emailQueue: EmailQueue,
-        private orderGateway: OrderGateway,
+        private notificationsGateway: NotificationsService,
         private paymentsService: PaymentsService
     ) { }
 
@@ -91,47 +91,57 @@ export class OrderService {
                 });
             });
 
-            // 📧 Send receipt to customer
-            await this.emailQueue.enqueueSendOrderEmail({
-                to: order.user.email,
-                customerName: user.name.split(' ')[0] || 'Customer',
-                orderId: order.id,
-                items: order.items.map((i) => ({
-                    name: i.name,
-                    quantity: i.quantity,
-                    total: i.totalCost,
-                })),
-                subtotal: order.subtotal,
-                tax: order.tax,
-                deliveryFee: order.deliveryFee,
-                totalAmount: order.total,
-            });
+            // // 📧 Send receipt to customer
+            // await this.emailQueue.enqueueSendOrderEmail({
+            //     to: order.user.email,
+            //     customerName: user.name.split(' ')[0] || 'Customer',
+            //     orderId: order.id,
+            //     items: order.items.map((i) => ({
+            //         name: i.name,
+            //         quantity: i.quantity,
+            //         total: i.totalCost,
+            //     })),
+            //     subtotal: order.subtotal,
+            //     tax: order.tax,
+            //     deliveryFee: order.deliveryFee,
+            //     totalAmount: order.total,
+            // });
 
-            // 📧 Send notification to vendor
-            await this.emailQueue.enqueueVendorOrderEmail({
-                to: vendor.email ?? 'vendor@example.com',
-                vendorName: vendor.businessName ?? 'Vendor',
-                orderId: order.id,
-                customerName: user.name.split(' ')[0] || 'Customer',
-                items: order.items.map((i) => ({
-                    name: i.name,
-                    quantity: i.quantity,
-                    total: i.totalCost,
-                })),
-                totalAmount: order.total,
-                actionUrl: `${process.env.APP_URL}/vendor/orders/${order.id}`,
-            });
+            // // 📧 Send notification to vendor
+            // await this.emailQueue.enqueueVendorOrderEmail({
+            //     to: vendor.email ?? 'vendor@example.com',
+            //     vendorName: vendor.businessName ?? 'Vendor',
+            //     orderId: order.id,
+            //     customerName: user.name.split(' ')[0] || 'Customer',
+            //     items: order.items.map((i) => ({
+            //         name: i.name,
+            //         quantity: i.quantity,
+            //         total: i.totalCost,
+            //     })),
+            //     totalAmount: order.total,
+            //     actionUrl: `${process.env.APP_URL}/vendor/orders/${order.id}`,
+            // });
 
+            console.log(user.id, vendor.userId)
             // 🔔 Emit saved order
-            this.orderGateway.emitNewOrder(order);
-
+            const notif = await this.notificationsGateway.createNotification({
+                type: 'order',
+                title: 'New Order Received',
+                message: `Order #${order.id} from customer ${order.user.name}`,
+                senderId: user.id,    // customer who placed it
+                receiverId: vendor.userId // restaurant owner
+            });
+            console.log(notif)
             return order;
         } catch (error) {
+            console.log(error)
             return bad(error);
         }
     }
 
     async getUserOrders(userId: string) {
+        console.log(userId)
+
         try {
             return await this.prisma.order.findMany({
                 where: { userId },
@@ -149,8 +159,18 @@ export class OrderService {
 
     async getVendorOrders(vendorId: string) {
         try {
+            console.log(vendorId)
+
+            const vendor = await this.prisma.vendor.findUnique({
+                where: {
+                    userId: vendorId
+                },
+            })
+
+            if (!vendor) bad("Vendor not found")
+
             return await this.prisma.order.findMany({
-                where: { vendor: { id: vendorId } },
+                where: { vendorId: vendor.id },
                 include: {
                     items: { include: { variant: true, extras: true } },
                     user: true,
@@ -173,18 +193,28 @@ export class OrderService {
                 },
             });
         } catch (error) {
-            return bad(error);
+            return bad(error.message);
         }
     }
 
     async updateOrderStatus(orderId: string, status: OrderStatus) {
         try {
-            return await this.prisma.order.update({
+            const order = await this.prisma.order.findUnique({
+                where: { id: orderId },
+            });
+
+            if (!order) bad(`Order with id ${orderId} not found`)
+            if (order.status === status) bad(`Order already marked as ${status}`)
+
+            await this.prisma.order.update({
                 where: { id: orderId },
                 data: { status },
             });
+
+            return order
         } catch (error) {
-            return bad(error);
+            console.log(error)
+            return bad(error.message);
         }
     }
 }

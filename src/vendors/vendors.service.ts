@@ -7,6 +7,7 @@ import { OtpService } from '../otp/otp.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { bad } from '../utils/error.utils.js';
 import { isEmailTaken, isPhoneTaken, generateOtp, generateShortId } from '../utils/helpers.utils.js';
+import { Role } from '@prisma/client';
 @Injectable()
 export class VendorsService {
     constructor(private prisma: PrismaService, private emailQueue: EmailQueue, private otp: OtpService, private auth: AuthService
@@ -78,9 +79,10 @@ export class VendorsService {
                         passHash,
                     },
                 },
+                role: Role.VENDOR,
                 vendor: {
                     create: {
-                        businessName: name || businessName,
+                        businessName: businessName || name,
                         phone: phone || '',
                         email,
                         vendorId: `VEN${generateShortId(4)}`,

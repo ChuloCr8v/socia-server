@@ -15,6 +15,7 @@ import { ImagesModule } from './images/images.module';
 import { UsersModule } from './users/users.module';
 import { PaymentsModule } from './payments/payments.module';
 import { OrdersModule } from './orders/orders.module.js';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { OrdersModule } from './orders/orders.module.js';
         signOptions: { expiresIn: '1d' },
       }),
       inject: [ConfigService],
-    }), MenuModule, CloudinaryModule, ImagesModule, UsersModule, PaymentsModule, OrdersModule],
+    }), MenuModule, CloudinaryModule, ImagesModule, UsersModule, PaymentsModule, OrdersModule, NotificationsModule],
   controllers: [AppController],
   providers: [AppService,
     // {

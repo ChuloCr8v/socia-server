@@ -107,6 +107,6 @@ export class CreateOrderDto {
 
 export class UpdateOrderStatusDto {
     @IsString()
-    @IsIn(['PENDING', 'CONFIRMED', 'PREPARING', 'ON_THE_WAY', 'DELIVERED', 'CANCELLED'])
+    @IsIn(['PLACED', 'CONFIRMED', 'PREPARING', 'ON_THE_WAY', 'DELIVERED', 'CANCELLED'])
     status: string;
 }
