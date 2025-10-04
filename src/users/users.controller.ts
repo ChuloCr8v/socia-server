@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'src/auth/auth.types';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -33,4 +34,12 @@ export class UsersController {
     async verifyUserAccount(@Body() dto: { email: string, otp: string }) {
         return this.usersService.verifyUserAccount(dto)
     }
+
+    @Auth()
+    @Post('push-token')
+    async savePushToken(@Body() body: { token: string }, @Req() req) {
+        const userId = req.user.id;
+        return this.usersService.createExpoPushToken(userId, body.token);
+    }
 }
+

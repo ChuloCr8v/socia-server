@@ -33,6 +33,15 @@ enum OrderStatus {
   CANCELLED
   PENDING
   RECEIVED
+  REJECTED
+}
+
+enum OrderRejectionReason {
+  OUT_OF_STOCK
+  TEMP_UNAVAILABLE
+  CLOSED
+  NONE
+  OTHERS
 }
 
 enum MenuAvailability {
@@ -155,12 +164,14 @@ model User {
   //notifications
   sentNotifications     Notification[] @relation("SentNotifications")
   receivedNotifications Notification[] @relation("ReceivedNotifications")
+  expoPushTokens        String[]
 }
 
 model Order {
-  id               String      @id @default(uuid())
-  userId           String      @db.Uuid
-  vendorId         String      @db.Uuid
+  id               String                @id @default(uuid())
+  orderId          String?               @unique
+  userId           String                @db.Uuid
+  vendorId         String                @db.Uuid
   status           OrderStatus
   subtotal         Float
   tax              Float
@@ -169,7 +180,9 @@ model Order {
   items            OrderItem[]
   deliveryAddress  String
   paymentReference String
-  noteForRider     String?     @default("")
+  noteForRider     String?               @default("")
+  rejectionReason  OrderRejectionReason?
+  rejectionNote    String?
 
   user   User   @relation(fields: [userId], references: [id])
   vendor Vendor @relation(fields: [vendorId], references: [id])

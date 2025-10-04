@@ -5,6 +5,8 @@ import axios from 'axios';
 import * as ejs from 'ejs';
 import { join } from 'path';
 import { readFile } from 'fs/promises';
+import { formatOrderEmailContext } from 'src/utils/formatOrderEmailContext';
+import { Order, OrderStatus } from '@prisma/client';
 
 @Injectable()
 export class EmailService {
@@ -99,6 +101,32 @@ export class EmailService {
         return this.sendEmail(
             payload.to,
             `New Order Received #${payload.orderId}`,
+            html,
+        );
+    }
+    async sendOrderUpdateEmail(payload: {
+        to: string;
+        orderId: string;
+        customerName: string;
+        orderStatus: OrderStatus;
+        items: Array<{ name: string; quantity: number; total: number }>;
+        totalAmount: number;
+        status: OrderStatus
+        rejectionReason?: string;
+        rejectionNote?: string;
+        eta?: string;
+        actionUrl?: string;
+    }) {
+        const context = formatOrderEmailContext({
+            ...payload,
+            to: payload.to,
+        });
+
+        const html = await this.renderTemplate('order-updated', context);
+
+        return this.sendEmail(
+            payload.to,
+            `Order #${payload.orderId} - ${context.formattedStatus}`,
             html,
         );
     }

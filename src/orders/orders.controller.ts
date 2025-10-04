@@ -52,7 +52,9 @@ export class OrderController {
     ) {
         return this.orderService.updateOrderStatus(
             id,
-            body.status as OrderStatus,
+            body.status,
+            body.rejectionReason,
+            body.rejectionNote
         );
     }
 

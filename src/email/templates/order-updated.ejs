@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Order Status Update</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f9f9f9">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9f9f9; padding: 30px 0;">
+      <tr>
+        <td align="center">
+          <table width="500" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 40px;">
+            
+            <!-- Brand -->
+            <tr>
+              <td align="center" style="padding-bottom: 20px; font-size: 24px; font-weight: bold; color: #ff5722;">
+                U-Order
+              </td>
+            </tr>
+
+            <!-- Greeting -->
+            <tr>
+              <td align="center" style="padding: 10px 0; font-size: 14px; color: #555;">
+                Hi <%= customerName %>, your order <strong>#<%= orderId %></strong> has been updated.
+              </td>
+            </tr>
+
+            <!-- Status Badge -->
+            <tr>
+              <td align="center" style="padding: 20px;">
+                <span style="background-color: #ff5722; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 16px; font-weight: bold; text-transform: uppercase;">
+                  <%= status %>
+                </span>
+              </td>
+            </tr>
+
+            <!-- Conditional Message -->
+            <tr>
+              <td align="center" style="padding: 10px 0; font-size: 14px; color: #333;">
+                <% if (status === 'PLACED') { %>
+                  Your order has been placed successfully. 🎉
+                <% } else if (status === 'CONFIRMED') { %>
+                  Great news! Your order has been confirmed by the vendor.
+                <% } else if (status === 'PREPARING') { %>
+                  Your food is being freshly prepared 🍳.
+                <% } else if (status === 'READY') { %>
+                  Your order is ready for pickup. 🚶
+                <% } else if (status === 'PICKED_UP') { %>
+                  The rider has picked up your order. 🚴
+                <% } else if (status === 'ON_THE_WAY') { %>
+                  Your order is on the way! 🚚
+                <% } else if (status === 'DELIVERED') { %>
+                  Your order has been delivered. 🎊 Enjoy your meal!
+                <% } else if (status === 'CANCELLED') { %>
+                  We're sorry, your order has been cancelled.
+                  <% if (cancellationNote) { %>
+                    <br /><strong>Reason:</strong> <%= cancellationNote %>
+                  <% } %>
+                <% } else if (status === 'PENDING') { %>
+                  Your order is pending and awaiting confirmation.
+                <% } else if (status === 'RECEIVED') { %>
+                  The vendor has received your order and will process it soon.
+                <% } else if (status === 'REJECTED') { %>
+                  Unfortunately, your order has been rejected.
+                  <% if (rejectionReason) { %>
+                    <br /><strong>Reason:</strong> <%= rejectionReason %>
+                  <% } %>
+                  <% if (rejectionNote) { %>
+                    <br /><strong>Note:</strong> <%= rejectionNote %>
+                  <% } %>
+                <% } %>
+              </td>
+            </tr>
+
+            <!-- Order Details -->
+            <tr>
+              <td style="padding: 20px; width: 100%">
+                <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                  <% items.forEach(function(item){ %>
+                    <tr>
+                      <td style="padding: 8px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee;">
+                        <%= item.name %> (x<%= item.quantity %>)
+                      </td>
+                      <td align="right" style="padding: 8px 0; font-size: 14px; color: #333; border-bottom: 1px solid #eee;">
+                        ₦<%= item.total %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                  <tr>
+                    <td style="padding: 12px 0; font-size: 16px; font-weight: bold; color: #222;">Total</td>
+                    <td align="right" style="padding: 12px 0; font-size: 16px; font-weight: bold; color: #222;">
+                      ₦<%= totalAmount %>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- CTA Button -->
+            <tr>
+              <td align="center" style="padding-top: 20px;">
+                <a href="uorder-customer://orders/<%= orderId %>" style="background-color: #ff5722; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 16px;">
+                  View Order in App
+                </a>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td align="center" style="padding-top: 30px; font-size: 12px; color: #999;">
+                &copy; <%= year %> U-Order. All rights reserved.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -150,4 +150,28 @@ export class UsersService {
             return error.message || 'An unexpected error occurred.';
         }
     }
+    async createExpoPushToken(userId: string, token: string) {
+        try {
+            const user = await this.prismaService.user.findUnique({ where: { id: userId } });
+            if (!user) return { success: false, message: 'User not found' };
+
+            const existingTokens = user.expoPushTokens || [];
+            if (!existingTokens.includes(token)) {
+                existingTokens.push(token);
+            }
+
+            const updatedUser = await this.prismaService.user.update({
+                where: { id: userId },
+                data: {
+                    expoPushTokens: existingTokens,
+                },
+            });
+
+            return { success: true, data: updatedUser };
+        } catch (error) {
+            console.error('Error saving push token:', error);
+            return { success: false, message: 'Failed to save push token', error };
+        }
+    }
+
 }

@@ -54,6 +54,12 @@ export class EmailProcessor implements OnModuleInit {
                         break;
                     }
 
+                    case EmailQueues.SEND_ORDER_UPDATE: {
+                        const payload = job.data;
+                        await this.emailService.sendOrderUpdateEmail(payload);
+                        break;
+                    }
+
                     default:
                         console.warn(`[EmailQueue] Unknown job type: ${job.name}`);
                 }

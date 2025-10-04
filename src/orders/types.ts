@@ -1,5 +1,6 @@
-import { IsArray, IsIn, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { OrderStatus, OrderRejectionReason } from '@prisma/client';
 
 class ExtraDto {
     @IsString()
@@ -104,9 +105,20 @@ export class CreateOrderDto {
     @Type(() => OrderItemDto)
     items: OrderItemDto[];
 }
-
 export class UpdateOrderStatusDto {
+    @IsNotEmpty()
+    @IsEnum(OrderStatus)
+    status: OrderStatus;
+
     @IsString()
-    @IsIn(['PLACED', 'CONFIRMED', 'PREPARING', 'ON_THE_WAY', 'DELIVERED', 'CANCELLED'])
-    status: string;
+    @IsNotEmpty()
+    orderId: string;
+
+    @IsOptional()
+    @IsEnum(OrderRejectionReason)
+    rejectionReason?: OrderRejectionReason;
+
+    @IsOptional()
+    @IsString()
+    rejectionNote?: string;
 }
