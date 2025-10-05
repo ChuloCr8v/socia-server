@@ -1,5 +1,5 @@
 // src/notifications/notifications.controller.ts
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { NotificationsGateway } from './notifications.gateway';
 
@@ -20,8 +20,13 @@ export class NotificationsController {
         return this.notificationsGateway.sendNotification(body);
     }
 
-    @Post('read/:id')
+    @Patch(':id/read')
     async markAsRead(@Param('id') id: string) {
         return this.notificationsService.markAsRead(id);
+    }
+
+    @Delete(':id')
+    async deleteNotification(@Param('id') id: string) {
+        return this.notificationsService.deleteNotification(id);
     }
 }

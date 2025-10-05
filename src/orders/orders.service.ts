@@ -235,14 +235,14 @@ export class OrderService {
             await this.emailQueue.enqueueUpdateStatusEmail({
                 to: order.user.email,
                 customerName: `${order.user.name}`,
-                orderId: order.id,
-                orderStatus: order.status,
+                orderId: order.orderId,
+                orderStatus: status,
                 items: order.items.map((item) => ({
                     name: item.name,
                     quantity: item.quantity,
                     total: item.basePrice * item.quantity,
                 })),
-                status: order.status,
+                status: status,
                 totalAmount: order.total,
                 rejectionReason: order.rejectionReason || null,
                 rejectionNote: order.rejectionNote || null,

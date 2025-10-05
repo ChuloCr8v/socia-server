@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { bad } from 'src/utils/error.utils';
 
 @Injectable()
 export class NotificationsService {
@@ -60,9 +61,28 @@ export class NotificationsService {
     }
 
     async markAsRead(id: string) {
+        const notification = await this.prisma.notification.findUnique({
+            where: { id },
+        });
+
+        if (!notification) bad("Notification not found")
+
         return this.prisma.notification.update({
             where: { id },
-            data: { read: true },
+            data: { read: !notification.read },
+        });
+    }
+
+
+    async deleteNotification(id: string) {
+        const notification = await this.prisma.notification.findUnique({
+            where: { id },
+        });
+
+        if (!notification) bad("Notification not found")
+
+        return this.prisma.notification.delete({
+            where: { id },
         });
     }
 }
