@@ -199,42 +199,60 @@ export class OrderService {
         }
     }
 
-    async updateOrderStatus(orderId: string, status: OrderStatus, rejectionReason?: OrderRejectionReason, rejectctionNote?: string) {
-
+    async updateOrderStatus(
+        orderId: string,
+        status: OrderStatus,
+        rejectionReason?: OrderRejectionReason,
+        rejectionNote?: string
+    ) {
         try {
             const order = await this.prisma.order.findUnique({
                 where: { id: orderId },
                 include: {
-                    user: true, items: {
+                    user: true,
+                    vendor: { include: { user: true } },
+                    items: {
                         include: {
                             extras: true,
-                            variant: true
-                        }
-                    }
-                }
+                            variant: true,
+                        },
+                    },
+                },
             });
 
-            if (!order) bad(`Order with id ${orderId} not found`)
-            if (order.status === status) bad(`Order already marked as ${status}`)
-
-            if (status === OrderStatus.REJECTED) {
-
-            }
+            if (!order) return bad(`Order with id ${orderId} not found`);
+            if (order.status === status) return bad(`Order already marked as ${status}`);
 
             await this.prisma.order.update({
                 where: { id: orderId },
                 data: {
                     status,
                     rejectionReason: rejectionReason ? { set: rejectionReason } : { set: null },
-                    rejectionNote: rejectctionNote ? { set: rejectctionNote } : { set: null }
+                    rejectionNote: rejectionNote ? { set: rejectionNote } : { set: null },
                 },
             });
 
+            // 🧠 Map status to human-readable message
+            const readableStatusMap: Record<OrderStatus, string> = {
+                [OrderStatus.PLACED]: 'placed',
+                [OrderStatus.CONFIRMED]: 'confirmed by the vendor',
+                [OrderStatus.PREPARING]: 'being prepared',
+                [OrderStatus.READY]: 'ready for pickup',
+                [OrderStatus.PICKED_UP]: 'picked up by the rider',
+                [OrderStatus.ON_THE_WAY]: 'on the way to your address',
+                [OrderStatus.DELIVERED]: 'delivered successfully',
+                [OrderStatus.CANCELLED]: 'cancelled',
+                [OrderStatus.PENDING]: 'pending confirmation',
+                [OrderStatus.REJECTED]: 'rejected by the vendor',
+                [OrderStatus.RECEIVED]: 'completed successfully',
+            };
 
-            // 📧 Send receipt to customer
+            const readableStatus = readableStatusMap[status] || status.toLowerCase();
+
+            // 📧 Send update email
             await this.emailQueue.enqueueUpdateStatusEmail({
                 to: order.user.email,
-                customerName: `${order.user.name}`,
+                customerName: order.user.name,
                 orderId: order.orderId,
                 orderStatus: status,
                 items: order.items.map((item) => ({
@@ -250,11 +268,20 @@ export class OrderService {
                 actionUrl: `uorder-customer://orders/${order.id}`,
             });
 
+            // 🔔 Notify user
+            await this.notificationsGateway.sendNotification({
+                type: 'order',
+                title: `Order #${order.orderId} ${readableStatus.includes('cancelled') ? 'Cancelled' : 'Updated'}`,
+                message: `Your order #${order.orderId} is now ${readableStatus}.`,
+                senderId: order.vendor.userId,
+                receiverId: order.user.id,
+            });
 
             return order
         } catch (error) {
-            console.log(error)
+            console.error(error);
             return bad(error.message);
         }
     }
+
 }

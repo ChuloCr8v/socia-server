@@ -167,9 +167,10 @@ export class AuthService {
                         headerImage: true,
                         profileImage: true,
                         operatingHour: true
-                    }
+                    },
 
-                }
+                },
+                orders: true
             }
         });
     }

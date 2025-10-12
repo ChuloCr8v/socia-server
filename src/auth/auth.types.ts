@@ -181,6 +181,10 @@ export class UpdateVendorDto extends PartialType(CreateVendorDto) {
     @ValidateNested({ each: true })
     @Type(() => OperatingHourDto)
     operatingHour?: OperatingHourDto[];
+
+    @IsOptional()
+    @IsBoolean()
+    isOnline?: boolean;
 }
 export class validateUserDto {
     @IsEmail()

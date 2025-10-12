@@ -32,6 +32,9 @@ export class UsersService {
             const user = await this.prismaService.user.findUnique({
                 where: {
                     email
+                },
+                include: {
+                    orders: true
                 }
             })
 

@@ -311,6 +311,7 @@ model Vendor {
   rating              Rating[]
   deliveryTime        DateTime?
   deliveryFee         Int
+  isOnline            Boolean?          @default(true)
 
   operatingHour OperatingHour[]
 
