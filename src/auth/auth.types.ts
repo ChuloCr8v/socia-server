@@ -1,6 +1,5 @@
 import { IsArray, IsBoolean, IsEmail, IsISO8601, IsNotEmpty, IsNumber, IsOptional, isString, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Type } from "class-transformer";
-import { ImageDto } from 'src/vendors/types/menu';
 import { PartialType } from '@nestjs/mapped-types';
 
 
@@ -11,9 +10,6 @@ export enum OtpTypes {
 
 
 export class CreateUserDto {
-    @IsNotEmpty()
-    @IsString()
-    name: string
 
     @IsString()
     @IsNotEmpty()
@@ -21,39 +17,11 @@ export class CreateUserDto {
 
     @IsString()
     @IsNotEmpty()
+    userName: string
+
+    @IsString()
+    @IsNotEmpty()
     password: string
-
-    @IsString()
-    @IsNotEmpty()
-    phoneNumber: string
-
-    @IsString()
-    @IsNotEmpty()
-    address: string
-
-    @IsString()
-    @IsNotEmpty()
-    city: string
-
-    @IsString()
-    @IsNotEmpty()
-    state: string
-
-    @IsBoolean()
-    @IsOptional()
-    isActive?: boolean
-
-    @IsBoolean()
-    @IsOptional()
-    isVerified?: boolean
-
-
-
-    // @IsArray()
-    // @IsOptional()
-    // @ValidateNested({ each: true })
-    // @Type(() => ImageDto)
-    // images: ImageDto[];
 
 }
 

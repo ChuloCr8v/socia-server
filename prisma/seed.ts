@@ -127,8 +127,7 @@ async function seedUsers() {
             await prisma.user.create({
                 data: {
                     email: user.email,
-                    name: user.name,
-                    phone: user.phone,
+                    userName: user.name,
                     role: user.role,
                     isVerified: true,
                     auth: {

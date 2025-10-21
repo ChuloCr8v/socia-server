@@ -65,7 +65,6 @@ export class AuthService {
                 data: {
                     email,
                     name,
-                    phone: user.phone ?? "",
                     auth: {
                         create: {
                             provider: 'GOOGLE',
@@ -134,7 +133,6 @@ export class AuthService {
                     email,
                     name: '',
                     isVerified: true,
-                    phone: "",
                     auth: {
                         create: {
                             provider: 'APPLE',
@@ -160,18 +158,7 @@ export class AuthService {
     async authUser(user: IAuthUser) {
         return await this.prisma.user.findUnique({
             where: { id: user.sub || user.userId },
-            include: {
-                vendor: {
-                    include: {
-                        logo: true,
-                        headerImage: true,
-                        profileImage: true,
-                        operatingHour: true
-                    },
 
-                },
-                orders: true
-            }
         });
     }
 

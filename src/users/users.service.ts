@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { hash } from 'argon2';
 import { CreateUserDto } from 'src/auth/auth.types';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -33,9 +33,7 @@ export class UsersService {
                 where: {
                     email
                 },
-                include: {
-                    orders: true
-                }
+
             })
 
             if (!user) return bad("User not found")
@@ -49,32 +47,17 @@ export class UsersService {
 
 
     async createUser(dto: CreateUserDto) {
-        const { email, phoneNumber, password, name } = dto;
 
-        if (await isEmailTaken(email)) bad('Email already exists');
-        if (await isPhoneTaken(phoneNumber)) bad('Phone number already exists');
+        if (await isEmailTaken(dto.email)) bad('Email already exists');
 
-        const passHash = await hash(password);
+        const passHash = await hash(dto.password);
 
         const { otp, hashedOtp } = await generateOtp();
 
         const user = await this.prismaService.user.create({
-            data: {
-                address: dto.address,
-                city: dto.city,
-                state: dto.state,
-                email,
-                isVerified: dto.isVerified ?? false,
-                name: name,
-                phone: phoneNumber,
-                auth: {
-                    create: {
-                        passHash,
-                    },
-                },
-
-            },
+            data: { email: dto.email, userName: dto.userName, auth: { create: { passHash } } },
         });
+
 
         await this.prismaService.otp.create({
             data: {
@@ -83,14 +66,14 @@ export class UsersService {
                 type: 'EMAIL_VERIFICATION',
                 user: {
                     connect: {
-                        email,
+                        email: dto.email,
                     },
                 },
             },
         });
 
         // Send OTP email
-        await this.emailQueue.enqueueOtpEmail(email, otp, name);
+        await this.emailQueue.enqueueOtpEmail(dto.email, otp, dto.userName);
 
         return user;
     }
@@ -114,7 +97,7 @@ export class UsersService {
             });
 
 
-            await this.emailQueue.enqueueOtpEmail(email, otp, user.name);
+            await this.emailQueue.enqueueOtpEmail(email, otp, user.userName);
 
             return { message: 'OTP sent', data: user };
         } catch (error: any) {
@@ -136,7 +119,7 @@ export class UsersService {
                 data: { isVerified: true },
             });
 
-            await this.emailQueue.enqueueVerifyAccount(email, user.name);
+            await this.emailQueue.enqueueVerifyAccount(email, user.userName);
             console.log({
                 message: "Account Verification Successful",
                 user

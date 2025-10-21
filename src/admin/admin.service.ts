@@ -16,9 +16,8 @@ export class AdminService {
                 await trx.user.create(
                     {
                         data: {
-                            name: dto.name,
+                            userName: dto.name,
                             email: dto.email,
-                            phone: dto.phone,
                             role: dto.role,
                             userId,
                             auth: {
@@ -50,9 +49,8 @@ export class AdminService {
                     {
                         where: { id },
                         data: {
-                            name: dto.name,
+                            userName: dto.name,
                             email: dto.email,
-                            phone: dto.phone,
                             role: dto.role,
                         }
                     }
