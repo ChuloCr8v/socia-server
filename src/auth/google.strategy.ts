@@ -2,7 +2,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { Strategy } from 'passport-google-token';
-import axios from 'axios';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google-token') {

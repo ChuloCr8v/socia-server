@@ -7,6 +7,7 @@ import { OtpModule } from '../otp/otp.module.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { JwtStrategy } from './jwt.strategy.js';
+import { GoogleStrategy } from './google.strategy.js';
 
 
 @Module({
@@ -24,7 +25,7 @@ import { JwtStrategy } from './jwt.strategy.js';
     EmailModule,
     OtpModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, GoogleStrategy],
   controllers: [AuthController],
   exports: [AuthService],
 

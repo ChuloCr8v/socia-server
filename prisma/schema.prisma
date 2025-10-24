@@ -80,9 +80,10 @@ model BankInformation {
 }
 
 model Auth {
+  id       String  @id @default(cuid())
   passHash String?
   user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String  @id @db.Uuid
+  userId   String  @db.Uuid
 
   provider   AuthProvider?
   providerId String?
@@ -133,6 +134,17 @@ model Otp {
   updatedAt DateTime @updatedAt
 }
 
+model Niche {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @db.Uuid
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id       String  @id @default(uuid()) @db.Uuid
   email    String  @unique
@@ -140,7 +152,7 @@ model User {
   name     String?
 
   userId String?  @unique
-  auth   Auth?
+  auth   Auth[]
   otps   Otp[]
   rating Rating[]
 
@@ -151,15 +163,19 @@ model User {
 
   status UserStatus? @default(ACTIVE)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
   //notifications
   sentNotifications     Notification[] @relation("SentNotifications")
   receivedNotifications Notification[] @relation("ReceivedNotifications")
   expoPushTokens        String[]
   Order                 Order[]
   Vendor                Vendor?
+
+  niche               Niche[]
+  niches              String[]
+  onboardingCompleted Boolean? @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {

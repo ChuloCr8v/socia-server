@@ -55,7 +55,7 @@ export class UsersService {
         const { otp, hashedOtp } = await generateOtp();
 
         const user = await this.prismaService.user.create({
-            data: { email: dto.email, userName: dto.userName, auth: { create: { passHash } } },
+            data: { email: dto.email, userName: dto.userName, auth: { create: { passHash, provider: "PASSWORD" } } },
         });
 
 
@@ -120,11 +120,7 @@ export class UsersService {
             });
 
             await this.emailQueue.enqueueVerifyAccount(email, user.userName);
-            console.log({
-                message: "Account Verification Successful",
-                user
 
-            })
             return {
                 message: "Account Verification Successful",
                 user
@@ -136,6 +132,34 @@ export class UsersService {
             return error.message || 'An unexpected error occurred.';
         }
     }
+
+
+    async addUserNiche(dto: { email: string, niches: string[] }) {
+        try {
+            const user = await this.prismaService.user.findUnique({
+                where: {
+                    email: dto.email,
+                }
+            })
+
+            if (!user) bad("Unauthorized")
+
+            await this.prismaService.user.update({
+                where: { email: dto.email },
+                data: {
+                    niches: dto.niches,
+                    onboardingCompleted: true
+                }
+            })
+
+            return {
+                message: "Niche updated Successfully", data: user
+            }
+        } catch (error) {
+            bad(error.message)
+        }
+    }
+
     async createExpoPushToken(userId: string, token: string) {
         try {
             const user = await this.prismaService.user.findUnique({ where: { id: userId } });

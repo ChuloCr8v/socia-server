@@ -4,6 +4,7 @@ import { OtpService } from '../otp/otp.service.js';
 import { AuthService } from './auth.service.js';
 import { LoginDto, IAuthUser, validateUserDto } from './auth.types.js';
 import { Auth, AuthUser } from './decorators/auth.decorator.js';
+import { OtpTypes } from 'generated/prisma/index.js';
 @Controller('auth')
 export class AuthController {
     constructor(private auth: AuthService,
@@ -19,10 +20,13 @@ export class AuthController {
     }
 
     @Post('google')
-    @UseGuards(AuthGuard('google-token'))
-    async googleAuth(@Req() req: { user: LoginDto }) {
-        const user = req.user;
-        return this.auth.googleLogin(user)
+    async googleAuth(@Body() body: { email: string, googleId: string, name: string }) {
+        return this.auth.googleLogin(body)
+    }
+
+    @Post("generate-otp")
+    generateOtp(@Body() dto: { email: string, type: OtpTypes }) {
+        return this.auth.generateOtp(dto)
     }
 
     @Post("apple")
@@ -30,7 +34,7 @@ export class AuthController {
         return this.auth.appleSignin(body.identityToken)
     }
 
-    @Get("auth-user")
+    @Get("me")
     @Auth()
     async getAuthUser(@AuthUser() user: IAuthUser) {
         return this.auth.authUser(user)

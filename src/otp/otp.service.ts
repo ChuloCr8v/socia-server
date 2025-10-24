@@ -4,12 +4,15 @@ import { isAfter } from 'date-fns';
 import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { bad } from '../utils/error.utils.js';
+import { EmailQueue } from '../email/email.queue.js';
+import { OtpTypes } from '@prisma/client';
+import { generateOtp } from '../utils/helpers.utils.js';
 
 @Injectable()
 export class OtpService {
     private readonly logger = new Logger(OtpService.name);
 
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService, private emailQueue: EmailQueue) { }
 
     async verifyOtp(userId: string, otp: string) {
         try {
@@ -37,6 +40,31 @@ export class OtpService {
         } catch (error: any) {
             this.logger.error('OTP verification failed', error);
             bad(error?.message || 'An unexpected error occurred.');
+        }
+    }
+
+    async generateOtp(dto: { email: string, userName: string, type: OtpTypes }) {
+        try {
+            const { otp, hashedOtp } = await generateOtp();
+
+
+            await this.prisma.otp.create({
+                data: {
+                    otp: hashedOtp,
+                    expiresAt: new Date(Date.now() + 30 * 60 * 1000),
+                    type: dto.type,
+                    user: {
+                        connect: {
+                            email: dto.email,
+                        },
+                    },
+                },
+            });
+
+            // Send OTP email
+            await this.emailQueue.enqueueOtpEmail(dto.email, otp, dto.userName);
+        } catch (error) {
+            bad(error.data.message)
         }
     }
 

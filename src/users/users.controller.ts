@@ -35,6 +35,13 @@ export class UsersController {
         return this.usersService.verifyUserAccount(dto)
     }
 
+
+    @Put("add-niche")
+    async addUserNiche(@Body() dto: { email: string, niches: string[] }) {
+        return this.usersService.addUserNiche(dto)
+    }
+
+
     @Auth()
     @Post('push-token')
     async savePushToken(@Body() body: { token: string }, @Req() req) {
