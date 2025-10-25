@@ -15,6 +15,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { OrdersModule } from './orders/orders.module.js';
 import { NotificationsModule } from './notifications/notifications.module';
 import { NicheModule } from './niche/niche.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { NicheModule } from './niche/niche.module';
         signOptions: { expiresIn: '1d' },
       }),
       inject: [ConfigService],
-    }), CloudinaryModule, ImagesModule, UsersModule, PaymentsModule, OrdersModule, NotificationsModule, NicheModule,],
+    }), CloudinaryModule, ImagesModule, UsersModule, PaymentsModule, OrdersModule, NotificationsModule, NicheModule, ChatModule,],
   controllers: [AppController],
   providers: [AppService,
     // {
