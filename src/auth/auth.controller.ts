@@ -4,7 +4,7 @@ import { OtpService } from '../otp/otp.service.js';
 import { AuthService } from './auth.service.js';
 import { LoginDto, IAuthUser, validateUserDto } from './auth.types.js';
 import { Auth, AuthUser } from './decorators/auth.decorator.js';
-import { OtpTypes } from '../../generated/prisma/index.js';
+import { OtpTypes } from '@prisma/client';
 @Controller('auth')
 export class AuthController {
     constructor(private auth: AuthService,

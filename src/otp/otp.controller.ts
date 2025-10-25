@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { OtpService } from './otp.service';
-import { OtpTypes } from '../../generated/prisma';
+import { OtpTypes } from '@prisma/client';
 
 @Controller('otp')
 export class OtpController {
